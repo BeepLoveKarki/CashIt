@@ -1,0 +1,93 @@
+<div class="jumbotron well me">
+  <h2>Rate Your Players</h2>
+  <form class="form form-horizontal center-block" method="POST" action="/signup_form" name="signup" id="signup" role="form">
+	<fieldset class="form-group">
+	  <label for="name">Full Name</label>
+         <input type="text" class="form-control" name="nameup" id="nameup" placeholder="Enter Your Full Name" required
+		 oninvalid="this.setCustomValidity('Please Enter Your Full Name')" oninput="this.setCustomValidity('')"/>
+    </fieldset>
+    <fieldset class="form-group">
+	   <label for="email">Email Address</label>
+	   <a title="Re-check your Email Address" data-placement="bottom" data-toggle="tooltip">
+         <input type="email" class="form-control" name="emailup" id="emailup" placeholder="Enter Your Email Address" required
+		 oninvalid="this.setCustomValidity('Please Enter A Valid Email Address')" oninput="this.setCustomValidity('');"/>
+	   </a>
+    </fieldset>
+    <fieldset class="form-group">
+	   <label for="password">Password</label>
+          <input type="password" class="form-control" name="passwordup" id="passwordup" placeholder="Enter Password" required
+		  oninvalid="this.setCustomValidity('Please Enter A Password')" oninput="this.setCustomValidity('')"/>
+    </fieldset>
+	<fieldset class="form-group">
+	   <label for="password1">Enter Password Again</label>
+          <input type="password" class="form-control" name="password1up" id="password1up" placeholder="Re-Enter Password" required
+		  oninput="this.setCustomValidity('')"/>
+    </fieldset>
+	<fieldset class="form-group text-center">
+               <button type="submit" class="btn btn-primary btn-md" id="buttonup" onclick="check()">Sign Up</button>
+    </fieldset>
+	<div class="text-center">
+       <p class="mee"><b>Already Have An Account? </b><br/>
+       <a href="" id="in" data-toggle="modal" title="Enter The Rating Board" onclick="doit()">Sign In</a></p>	   
+    </div>
+</form>
+</div>
+
+<div class="modal fade" id="signin-modal" tabindex="-1" role="dialog" aria-hidden="true"  data-backdrop="static" data-keyboard="false">
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+	 <h1 class="modal-title" id="signinlabel">Sign In</h1>
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="adoit()">
+      &times;
+     </button>
+	</div>
+ <div class="modal-body">
+  <form class="form form-horizontal center-block" action="/signin_form" method="POST" name="signin" id="signin" role="form">
+	 <fieldset class="form-group">
+	    <label for="email">Email Address</label>
+           <input type="email" name="emailin" class="form-control" id="emailin" required
+		   oninvalid="this.setCustomValidity('Please enter your email address to login')" oninput="this.setCustomValidity('')"/>
+      </fieldset>
+	  <fieldset class="form-group">
+	     <label for="password">Password</label>
+           <input type="password" name="passwordin" class="form-control" id="passwordin" required
+		    oninvalid="this.setCustomValidity('Please enter your password to login')" oninput="this.setCustomValidity('')"/>
+      </fieldset>
+	  <div class="forgot">
+	     <a href="" title="Reset The Ultimate Ratings Password" data-dismiss="modal" data-toggle="modal" data-target="#fyp-modal">Forgot Your Password?</a>
+	  </div>
+	  <fieldset class="form-group text-center">
+           <button type="submit" class="btn btn-danger">Sign In</button>
+      </fieldset>
+   </form>
+   </div>
+   </div>
+ </div>
+</div>
+
+
+<div class="modal fade" id="fyp-modal" tabindex="-1" role="dialog" aria-hidden="true"  data-backdrop="static" data-keyboard="false">
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+	 <h1 class="modal-title" id="fyplabel">Recover Your Account</h1>
+	<button type="button" class="close" data-dismiss="modal" data-toggle="modal" data-target="#signin-modal" aria-hidden="true">
+      &times;
+     </button>
+	</div>
+ <div class="modal-body">
+  <form class="form form-horizontal center-block" method="POST" action="/recover_account" name="signin" id="rsignin" role="form">
+	 <fieldset class="form-group">
+	    <label for="email">Enter Your Account Email Address</label>
+           <input type="email" name="emailfyp" class="form-control" id="emailfyp" required
+		   oninvalid="this.setCustomValidity('Please enter your account's email address')" oninput="this.setCustomValidity('')"/>
+      </fieldset>
+	  <fieldset class="form-group text-center">
+           <button type="submit" class="btn btn-danger">Done</button>
+      </fieldset>
+   </form>
+   </div>
+   </div>
+ </div>
+</div>

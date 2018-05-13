@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'; media-src *; img-src * filesystem: data:">
+		<meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link rel="stylesheet" type="text/css" href="css/index.css"/>
+		<link rel="stylesheet" type="text/css" href="bs/css/bootstrap.min.css"/>
+		<link rel="stylesheet" type="text/css" href="link/materialize-social/materialize-social.css"/>
+		<link rel="stylesheet" type="text/css" href="link/animate.css"/>
+		<link rel="stylesheet" href="link/font-awesome.min.css">
+		<script type="text/javascript" src="link/jquery.js"></script>
+		<script type="text/javascript" src="link/OpenFB/openfb.js"></script>
+		<title>CashOut</title>
+    </head>
+    <body>
+	  
+	  <div class="modal" id="fyp-modal" data-backdrop="static" tabindex="-1" role="dialog">
+	    <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header text-center">
+                <h4 class="modal-title">Recover your password</h4>
+               </div>
+              <div class="modal-body">
+                <form class="form form-horizontal center-block recover" method="POST" action=" " name="recover" role="form"> <!--Recover form-->
+	             <fieldset class="form-group">
+                    <input type="number" name="walletrec" id="walletrec" placeholder="Enter Your Mobile Wallet Number" required/>
+                 </fieldset>
+              </div>
+             <div class="modal-footer text-center">
+			    <fieldset class="form-group buts">
+                       <button type="submit" class="btn btn-info" id="buttonrec">Done</button>
+					   <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                 </fieldset>
+			   </form>
+            </div>
+		 </div>
+	    </div>
+	  </div>
+	  
+	  <div class="container">
+	   <header id="heading">
+          <div class="row">
+            <div class="col-sm-12 col-xs-12 text-center">
+			  <img src="imgs/logo.jpg" width="100%" class="img-responsive" id="logo"/> <!--Logo-->
+	        </div>
+          </div>
+       </header>
+      <main id="main" class="content">
+		  <div class="row">
+		    <div class="col-xs-12 col-sm-12 text-center">
+		       
+			   <form class="form form-horizontal center-block signin" method="POST" action="/signin_form" name="signin" role="form"> <!--Login form-->
+	             <fieldset class="form-group">
+	               <label for="name">Mobile Wallet Number</label>
+                    <input type="number" name="walletin" id="walletin" placeholder="Enter Your Mobile Wallet Number" required/>
+                 </fieldset>
+				 <fieldset class="form-group">
+	               <label for="name">Password</label>
+                    <input type="password" name="passin" id="passin" placeholder="Enter Your Password" required/>
+                 </fieldset>
+				 <fieldset class="form-group text-center">
+                       <button type="submit" class="btn btn-info" id="buttonin">Sign In</button>
+					   <p id="fyp">Forgot Your Password?</p>
+                 </fieldset>
+				 <fieldset class="form-group text-center">
+                       <button type="button" class="btn btn-warning" id="buttonup">Sign Up</button>
+                 </fieldset>
+			   </form>
+			   
+			   <form class="form form-horizontal center-block signup" name="signup" method="POST" action="/signup_form" role="form"> <!--Signup form-->
+	             <fieldset class="form-group">
+	               <label for="name">Name</label>
+                    <input type="text" name="name" id="name" placeholder="Enter Your Full Name" required/>
+                 </fieldset>
+				 <fieldset class="form-group">
+	               <label for="name">Mobile Wallet Number</label>
+                    <input type="number" name="walletup" id="walletup" placeholder="Enter Your Mobile Wallet Number" required/>
+                 </fieldset>
+				 <fieldset class="form-group">
+	               <label for="name">Confirm Mobile Wallet Number</label>
+                    <input type="number" name="conwalletup" id="conwalletup" placeholder="Enter Your Mobile Wallet Number Again" required/>
+                 </fieldset>
+				 <fieldset class="form-group">
+	               <label for="name">Region/State</label>
+                    <input type="text" name="state" id="state" placeholder="Enter Your Region/State" required/>
+                 </fieldset>
+				 <fieldset class="form-group">
+	               <label for="name">Password</label>
+                    <input type="password" name="passup" id="passup" placeholder="Enter Your Password" required/>
+                 </fieldset>
+				 <fieldset class="form-group">
+	               <label for="name">Confirm Password</label>
+                    <input type="password" name="conpassup" id="conpassup" placeholder="Enter Your Password Again" required/>
+                 </fieldset>
+				 <fieldset class="form-group text-center">
+                       <button type="submit" class="btn btn-info" id="buttonsignup">Sign Up</button>
+                 </fieldset>
+				 <fieldset class="form-group text-center">
+                       <button type="button" class="btn btn-warning" id="buttonsignin">Sign In</button>
+                 </fieldset>
+			   </form>
+		    
+			
+			</div>
+			<div class="col-xs-12 col-sm-12 text-center">
+				<button type="button" class="btn btn-primary" id="buttonfb"><i class="fa fa-facebook"></i>Sign in with Facebook</button>
+			</div>
+			<!--div class="col-xs-12 col-sm-12 text-center">
+			  <button type="button" class="btn btn-danger" id="buttongo"><i class="fa fa-google"></i>Sign in with Google</button>
+			</div-->
+		  </div>
+       </div>
+      </main>
+      <footer id="footer">
+      </footer>
+    </div>
+	  
+	  <script type="text/javascript" src="cordova.js"></script>
+      <script type="text/javascript" src="js/index.js"></script>
+	  <script type="text/javascript" src="bs/tether/dist/js/tether.min.js"></script>
+	  <script type="text/javascript" src="bs/js/bootstrap.min.js"></script>
+    </body>
+</html>

@@ -1,0 +1,77 @@
+.signin{
+  margin-top:10px;
+}
+
+#buttonin,#buttonup,#buttonfb,#buttongo,#buttonsignup,#buttonsignin{
+ width:300px;
+}
+
+#buttonsignup{
+ margin-top:10px;
+}
+
+#buttonup{
+ margin-top:-10px;
+}
+
+#buttonin{
+ margin-top:10px;
+}
+
+#buttonfb{
+ margin-top:10px;
+}
+/*#buttongo{
+ margin-top:20px;
+}*/
+
+.fa-facebook{
+  margin-right:10px;
+}
+/*.fa-google{
+  margin-right:10px;
+  margin-left:-15px;
+}*/
+
+input{
+ text-align:center;
+ width:300px;
+}
+
+body{
+ background-color:#FFD2D5 !important;
+ margin-bottom:20px !important;
+
+}
+#fyp{
+ margin-top:10px;
+ color:#8470FF;
+}
+
+.signin label,.signup label{
+ color:#8470FF;
+}
+
+#fyp:hover{
+  text-decoration:underline;
+}
+
+#main{
+  -vendor-animation-duration: 10s;
+}
+
+#fyp-modal{
+     margin-top:150px;
+}
+
+#fyp-modal .modal-title, .buts{
+ margin:auto;
+}
+
+.recover{
+  margin-top:10px !important;
+}
+
+.signup{
+  display:none;
+}

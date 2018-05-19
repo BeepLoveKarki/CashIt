@@ -1,0 +1,1 @@
+let smsGateway = require('sms-gateway-nodejs')('biplabkarki04@gmail.com', 'Meriaama');

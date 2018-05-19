@@ -1,0 +1,56 @@
+{
+  "_from": "cordova-plugin-password-dialog",
+  "_id": "cordova-plugin-password-dialog@1.2.0",
+  "_inBundle": false,
+  "_integrity": "sha1-IaFjbDZKl1Ogqvl52koJXYfxUV8=",
+  "_location": "/cordova-plugin-password-dialog",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "cordova-plugin-password-dialog",
+    "name": "cordova-plugin-password-dialog",
+    "escapedName": "cordova-plugin-password-dialog",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-password-dialog/-/cordova-plugin-password-dialog-1.2.0.tgz",
+  "_shasum": "21a1636c364a9753a0aaf979da4a095d87f1515f",
+  "_spec": "cordova-plugin-password-dialog",
+  "_where": "C:\\Users\\User\\Documents\\cashit",
+  "bugs": {
+    "url": "https://github.com/justin-credible/cordova-plugin-password-dialog/issues"
+  },
+  "bundleDependencies": false,
+  "cordova": {
+    "id": "cordova-plugin-password-dialog",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "deprecated": false,
+  "description": "Cordova plugin for showing password prompt dialogs.",
+  "homepage": "https://github.com/justin-credible/cordova-plugin-password-dialog#readme",
+  "keywords": [
+    "cordova",
+    "password",
+    "change",
+    "dialog",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "license": "MIT",
+  "name": "cordova-plugin-password-dialog",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justin-credible/cordova-plugin-password-dialog.git"
+  },
+  "version": "1.2.0"
+}

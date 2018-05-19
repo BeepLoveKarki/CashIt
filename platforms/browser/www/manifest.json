@@ -1,9 +1,9 @@
 {
   "background_color": "#FFF",
   "display": "standalone",
-  "name": "CashOut",
-  "short_name": "CashOut",
-  "version": "com.cashout.app",
+  "name": "CashIt",
+  "short_name": "CashIt",
+  "version": "com.cashit.app",
   "description": "A sample Apache Cordova application that responds to the deviceready event.",
   "author": "Apache Cordova Team",
   "icons": [],

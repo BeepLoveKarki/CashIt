@@ -33,5 +33,45 @@
       "APP_ID": "1916831788607461",
       "APP_NAME": "CashOut"
     }
+  },
+  "cordova-plugin-native-spinner": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-native-spinner"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-spinner-dialog": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-spinner-dialog"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-pin-dialog": {
+    "source": {
+      "type": "registry",
+      "id": "https://github.com/Paldom/PinDialog.git"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-password-dialog": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-password-dialog"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-network-information": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-network-information"
+    },
+    "is_top_level": true,
+    "variables": {}
   }
 }

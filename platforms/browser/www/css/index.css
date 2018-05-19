@@ -57,7 +57,8 @@ body{
 }
 
 #main{
-  -vendor-animation-duration: 10s;
+  animation-duration: 1s;
+  -vendor-animation-duration: 1s;
 }
 
 #fyp-modal{

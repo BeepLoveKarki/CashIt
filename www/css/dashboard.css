@@ -1,3 +1,121 @@
-.nav{
+html,body{
+   width: 100%;
+   position: fixed;
+}
+#heading{
+    background-color:#E066FF;
+    color:#FFFFFF;
+}
+.nav a{
+    color:#FFFFFF;
+    background-color:#E066FF !important;
+}
+.nav a:hover,.nav .active{
+    background-color:#7A378B !important;
+}
+#footer{
+   position:absolute;
+   bottom:0;
+   width:100%;
+}
+.nav-media,.nav-info{
+    display: none;
+}
+.circle{
+    margin-top: 3px;
+    margin-left: 3px;
+    margin-bottom: 3px;
+    height: 145%;
+    border-radius: 50%;
+    width: 35%;
+    display: inline-block;
+    color:#FFFFFF;
+    background-color: #00BFFF;
+}
+#withdraw{
+    margin-top:10px;
+}
+#title{
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+.dots:after {
+    content: '\2807';
+    font-size: 30px;
+}
+.dots{
+    margin-top: -45px;
+    margin-right: 5px;
+}
+
+.dropdown{
+    overflow: show;
+}
+#coins{
+    margin-top: 47px;
+}
+.data{
+    margin-top:-55px;
+    margin-left: 180px;
+}
+#wallet{
+    margin-top: -10px;
+}
+.ups{
+    background-color: #FF69B4;
+    color:#FFFFFF;
+    margin-top: 5px;
+}
+.nav-home{
+    margin-top: 1px;
+}
+.welcome{
+    background-color: #F08080;
+    color:#FFFFFF;
+}
+#welcomet{
+    margin-top: 5px;
+}
+#pledge{
+    margin-top: 15px;
+}
+#pledge-text{
+    margin-right:10px;
+}
+.trans-head{
+    background-color: #A020F0;
+    color:#FFFFFF;
+    border-radius: 10px;
+}
+.trans-head-text{
+    margin-top: 5px;
+}
+#no-pledge{
+    margin-top: 100px;
+}
+.trans{
+    height:225px;
+    margin-top: 10px;
+    overflow-y: scroll;
+}
+#withdraw{
+    margin-bottom: 15px;
     margin-top: 10px;
 }
+#time{
+    margin-left: 50px;
+}
+#fdate{
+    margin-left: 10px;
+}
+#mon{
+    margin-right: 10px;
+}
+.date:hover{
+    background-color: #B22222;
+    color:#FFFFFF;
+}
+
+
+
+

@@ -15,16 +15,29 @@
 	  <title>DashBoard|CashIt</title>
     </head>
     <body>
-	  
-	  <div class="container">
 	   <header id="heading">
          <div class="row">
            <div class="col-xs-12 col-sm-12">
-             <nav>
+            <nav>
+                <div>
+                  <h3 id="title" class="text-center">CashCow</h3>
+                   <div class="dropdown">
+                      <div class="dots text-right" data-toggle="dropdown"></div>
+                      
+                      <div class="dropdown-menu dropdown-menu-right">
+                          <a class="dropdown-item" onclick="sets(0)">Account Settings</a>
+                          <a class="dropdown-item" onclick="sets(1)">Pledge Settings</a>
+                          <a class="dropdown-item" onclick="sets(2)">Load Coins</a>
+                          <a class="dropdown-item" onclick="sets(3)">Clear Pledge History</a>
+                          <a class="dropdown-item" id="signout" href="#">Sign Out</a>
+                      </div>
+                   
+                    </div>
+                </div>
                 <ul class="nav nav-pills nav-fill">
-                  <a data-toggle="pill" class="nav-item nav-link active" href="#nav-home">Home</a>
-                  <a data-toggle="pill" class="nav-item nav-link"  href="#nav-media" role="tab">Media</a>
-                  <a data-toggle="pill" class="nav-item nav-link"  href="#nav-info" role="tab">Info</a>
+                  <a data-toggle="pill" class="nav-item nav-link active" onclick="show(0)"  role="tab">Home</a>
+                  <a data-toggle="pill" class="nav-item nav-link" onclick="show(1)" href="#nav-media" role="tab">Media</a>
+                  <a data-toggle="pill" class="nav-item nav-link" onclick="show(2)"  href="#nav-info" role="tab">Info</a>
                 </ul>
               </nav>
             </div>
@@ -36,15 +49,73 @@
           <p>Please verify it by clicking button below</p>
           <button type="button" id="verify">Verify</button>
         </div>
+        
+        <div class="nav-home">
+          <div class="row ups">
+            <div class="col-sm-4 col-xs-4">
+                <span class="circle center-block">
+                    <h4 id="coins" class="text-center"></h4>
+                </span>
+            </div>
+            <div class="col-sm-4 col-xs-4">
+                <div class="data">
+                    <h5 id="name"></h5>
+                    <p id="uid"></p>
+                    <p id="wallet"></p>
+                </div>
+            </div>
+            <div class="col-sm-4 col-xs-4"></div>
+          </div>
+          <div class="row">
+                <button type="button" class="btn-block btn-primary" id="pledge"><span id="pledge-text"> Pledge</span></button>
+                <button type="button" class="btn-block btn-danger" id="withdraw">Withdraw coins to wallet</button>
+          </div>
+            <!--div class="row">
+              <div class="col-sm-12 col-xs-12">
+                <div class="text-center welcome">
+                  <h5 id="welcomet">Welcome to Cash-Cow Club</h5>
+                </div>
+              </div>
+            </div-->
+            
+            <div class="row">
+              <div class="col-sm-12 col-xs-12 trans-head">
+                  <h5 class="text-center trans-head-text">Pledge History</h5>
+              </div>
+            </div>
+              
+            <div class="row">
+                <div class="col-sm-12 col-xs-12 trans">
+                  
+                </div>
+            </div>
+
+          </div>
+        
+        <div class="nav-media">
+          Media
+        </div>
+        
+        <div class="nav-info">
+          info
+        </div>
+
+        <div class="pledge-settings">
+            
+        </div>
+        <div class="account-settings">
+          
+        </div>
+
       </main>
       <footer id="footer">
-         <button type="button" id="signout">Sign Out</button>
+         
       </footer>
-    </div>
+
 	  
 	  <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/dashboard.js"></script>
 	  <script type="text/javascript" src="bs/tether/dist/js/tether.min.js"></script>
 	  <script type="text/javascript" src="bs/js/bootstrap.min.js"></script>
-    </body>
+  </body>
 </html>

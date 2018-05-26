@@ -77,7 +77,7 @@ function inserttodb(){ //sign up backend handle
   if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
-  $.get("http://192.168.0.101:8080/insert").then((res)=>{
+  $.get("http://192.168.0.112:8080/insert").then((res)=>{
      //window.plugins.spinnerDialog.hide();
     let m=$.parseJSON(res);
     if(m.status=="OK"){
@@ -140,7 +140,7 @@ function fbdatapost(data){ //post data from fb
   }else{
     //window.plugins.spinnerDialog.show();
   $.ajax({
-    url:"http://192.168.0.101:8080/fb_in",
+    url:"http://192.168.0.112:8080/fb_in",
     type:'POST',
     data:data,
     success:function(res){
@@ -196,7 +196,7 @@ function checkifwallet(a,b){ //check if wallet already exists
   if(b!=0){
      //window.plugins.spinnerDialog.show();
     $.ajax({
-      url:"http://192.168.0.101:8080/checkall",
+      url:"http://192.168.0.112:8080/checkall",
       type:"POST",
       data:a,
       success:(res)=>{
@@ -216,7 +216,7 @@ function checkifwallet(a,b){ //check if wallet already exists
   }else{
     //window.plugins.spinnerDialog.show();
   $.ajax({
-    url:"http://192.168.0.101:8080/checkwallet",
+    url:"http://192.168.0.112:8080/checkwallet",
     type:'POST',
     data:a,
     success:(res)=>{
@@ -239,7 +239,7 @@ function postforsms(a,n){ //post for sending smd
   }else{
    //window.plugins.spinnerDialog.show();
   $.ajax({
-    url:"http://192.168.0.101:8080/verifynum",
+    url:"http://192.168.0.112:8080/verifynum",
     type:'POST',
     data:a,
     success:function(res){
@@ -259,7 +259,7 @@ function datastore(num){  //store signup of fb data to db
   if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
-  $.get("http://192.168.0.101:8080/storenow").then((res)=>{
+  $.get("http://192.168.0.112:8080/storenow").then((res)=>{
    if(res=="\"OK\""){
       startdash(num,1);
     }else{
@@ -302,7 +302,7 @@ function passrecover(data){
   }else{
     //window.plugins.spinnerDialog.show();
   $.ajax({
-    url:"http://192.168.0.101:8080/updatepass",
+    url:"http://192.168.0.112:8080/updatepass",
     type:"POST",
     data:data,
     success:(res)=>{
@@ -322,7 +322,7 @@ function datastored() { //new data stored
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
     //window.plugins.spinnerDialog.show();
-  $.get("http://192.168.0.101:8080/verified").then((result)=>{
+  $.get("http://192.168.0.112:8080/verified").then((result)=>{
    if(result=="\"OK\""){
      //window.plugins.spinnerDialog.hide();
     navigator.notification.alert("Account created!!! You may now sign in using these credentials!!!",()=>{

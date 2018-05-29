@@ -1,36 +1,65 @@
-let code,coins,dates;
+let code,coins,dates,uid;
 window.onload=()=>{
-  if(window.localStorage.getItem("verified")!=null && window.localStorage.getItem("verified")=="no"){
-    $(".unverified").css("display","block");
-  }
-  else{
-    $(".unverified").css("display","none");
     fetchdata();
-  }
 };
 
 document.addEventListener("backbutton",exit);
-document.getElementById("pledge").addEventListener("click",pledging);
+document.getElementById("pledge").addEventListener("click",fundwork);
 
-function pledging(){
+function withdrawing(){
+   if(parseInt(coins)==0){
+      preventform("You have no coins in order to withdraw to wallet");
+    }else{
+      fundwork(1);
+    }
+    //fundwork(1);
+}
+
+function pledgefund(pass){
+ //window.plugins.spinnerDialog.show();
+ $.post("http://192.168.0.112:8080/pledge",{date:new Date(),number:window.localStorage.getItem("num"),pass:pass}).then((res)=>{
+  //window.plugins.spinnerDialog.hide();
+  if(res=="\"OK\""){
+   navigator.notification.alert("You have successfully pledged 50 GHC",()=>{
+     fetchdata();
+   },"",["OK"]);
+  }else{
+    preventform("An unexpected error occurred. Try again.");
+  }
+});
+}
+
+function fundwork(b){
+  navigator.notification.prompt("Please enter your mobile wallet password",(r)=>{
+    if(r.buttonIndex==1){
+      if(r.input1.length!=4||isNaN(r.input1)){
+        navigator.notification.alert("Please enter a valid wallet password",()=>{
+          fundwork(b);
+        },"",["OK"]);
+      }else{
+        if(b==1){
+          withdrawfund(r.input1);
+        }else{
+         pledgefund(r.input1);
+        }
+      }
+    }
+  },"",["OK","Cancel"]);
+}
+
+function withdrawfund(pass){
   if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
-    if(parseInt(coins)<50){
-       preventform("You need at least 50 coins in your bucket to pledge. Please load some coins from Load Coin option under top left bar button.");
+  $.post("http://192.168.0.112:8080/withdraw",{num:window.localStorage.getItem("num"),pass:pass,date:new Date()}).then((res)=>{
+    if(res=="\"OK\""){
+      preventform("Your fund has been successfully withdrawn to wallet with the rate of 1 Coin=1GHC");
+    }else if(res=="\"Wait\""){
+       preventform("You have to wait at least 3 hours before your last pledge in order to withdraw coins to wallet");
     }else{
-   //window.plugins.spinnerDialog.show();
-   $.post("http://192.168.0.112:8080/pledge",{date:new Date(),number:window.localStorage.getItem("num")}).then((res)=>{
-     //window.plugins.spinnerDialog.hide();
-     if(res=="\"OK\""){
-      navigator.notification.alert("You have successfully pledged 50 GHC",()=>{
-        fetchdata();
-      },"",["OK"]);
-     }else{
-       preventform("An unexpected error occurred. Try again.");
-     }
+      preventform("An error occurred. Please try again later");
+    }
   });
- }
  }
 }
 
@@ -47,33 +76,30 @@ function fetchdata(){
    let m=$.parseJSON(res);
    coins=m.coins;
    dates=m.dates;
+   uid=m.uid;
    $("#name").text(m.name);
-   $("#coins").text("Coins:"+m.coins);
+   if(parseInt(m.coins)>=1000){
+    $("#coins").text("Coins:"+ (parseFloat((parseInt(m.coins)/1000).toString()).toFixed(1)).toString()+"K");
+   }else{
+    $("#coins").text("Coins:"+m.coins);
+   }
    $("#uid").append("User Id: "+m.uid);
    $("#wallet").append("Wallet: "+window.localStorage.getItem("num"));
    if(m.dates==""){
      $(".trans").css({
-       "background-color":"#DB7093",
-       "color":"#FFFFFF",
        "border-radius": "10px",
        "margin-left": "40px",
        "margin-right": "42px"
      });
-     $(".trans-head").css("display","none");
-     $(".trans").html("<h5 class=\"text-center\" id=\"no-pledge\">You have no any pledge history</h5>");
+     $(".trans").html("<p class=\"text-center\" id=\"no-pledge\">You have no any pledge history</p>");
    }else{
-     $(".trans-head").css({
-       "display":"block",
-       });
      $(".trans").empty();
      $(".trans").css({
-      "background-color":"#FFFFFF",
-      "color":"#000000",
       "margin-left":"0px",
       "margin-right":"0px"
      });
       m.dates=m.dates.slice(0,-1);
-      m.dates.split(",").reverse().forEach(element => {
+      m.dates.split(",").reverse().forEach((element,index) => {
         let r="AM";
         let date=new Date(element);
         let h=parseInt(date.getHours());
@@ -91,7 +117,7 @@ function fetchdata(){
         }
         let fdate=date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate();
         let ftime=h.toString()+":"+m.toString()+":"+s.toString()+" "+r;
-        $(".trans").append("<div class=\"date\">"+"<span id=\"fdate\">"+fdate+"</span><span id=\"time\"> "+ftime+"</span><span class=\"pull-right\" id=\"mon\">50 GHC</span></div>");
+        $(".trans").append("<div class=\"date\"><span id=\"code\">Pledge Code: "+uid+"-P"+(index+1)+"</span><br/>"+"<span id=\"mon\">Amount: 50 GHC</span><br/>"+"<span id=\"fdate\"> Date: "+fdate+"</span><br/><span id=\"time\"> Time: "+ftime+"</span></div><hr>");
       });
    }
  });
@@ -200,7 +226,7 @@ function sets(n){
     case 1:
      break;
     case 2:
-     loadnow();
+    withdrawing();
      break;
     case 3:
      clearpledge();
@@ -208,37 +234,6 @@ function sets(n){
   }
 }
 
-function loadnow(){
-  //window.plugins.numberDialog.promptClear("Please enter the number of coins to load \(1 coin = 1 GHC\)",loadfund,"",["OK","Cancel"]);
-  navigator.notification.prompt("Please enter the number of coins to load \(1 coin = 1 GHC\)",loadfund,"",["OK","Cancel"]);
-  
-  function loadfund(r){
-  if(r.buttonIndex==1){
-    if(isNaN(r.input1)|| r.input1.length==0 || Math.sign(r.input1)!=1){
-       navigator.notification.alert("Please enter a valid number of coins",()=>{
-          loadnow();
-       },["OK"]);
-    }else{
-     if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
-        preventform("Your offline. Please get connected to internet before proceeding.");
-    }else{
-       //window.plugins.spinnerDialog.show();
-      $.post("http://192.168.0.112:8080/loadfund",{num:window.localStorage.getItem("num"),amt:r.input1}).then((res)=>{
-        //window.plugins.spinnerDialog.hide(); 
-       if(res=="\"OK\""){
-          navigator.notification.alert("Fund has been successfully loaded",()=>{
-            fetchdata();
-          },["OK"]);
-        }else{
-          preventform("An error occurred. Please try again later");
-        }
-      });
-    }
-  } 
-  }
- }
-
-}
 
 function clearpledge(){
   if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){

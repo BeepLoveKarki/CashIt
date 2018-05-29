@@ -15,7 +15,12 @@
         "cordova-ios": "^4.5.4",
         "cordova-plugin-dialogs": "^2.0.1",
         "cordova-plugin-facebook4": "^2.1.0",
+        "cordova-plugin-native-spinner": "^1.1.3",
         "cordova-plugin-native-transitions": "^0.2.3",
+        "cordova-plugin-network-information": "^2.0.1",
+        "cordova-plugin-password-dialog": "^1.2.0",
+        "cordova-plugin-pin-dialog": "^0.1.3",
+        "cordova-plugin-spinner-dialog": "^1.3.1",
         "cordova-plugin-whitelist": "^1.3.3",
         "hellojs": "^2.0.0-4",
         "materialize-social": "^1.0.3"
@@ -29,11 +34,16 @@
                 "APP_ID": "1916831788607461",
                 "APP_NAME": "CashOut",
                 "ANDROID_SDK_VERSION": "4.+"
-            }
+            },
+            "cordova-plugin-native-spinner": {},
+            "cordova-plugin-spinner-dialog": {},
+            "cordova-plugin-pin-dialog": {},
+            "cordova-plugin-password-dialog": {},
+            "cordova-plugin-network-information": {}
         },
         "platforms": [
-            "browser",
             "ios",
+            "browser",
             "android"
         ]
     }

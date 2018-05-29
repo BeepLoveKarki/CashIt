@@ -1,4 +1,3 @@
-let verified;
 window.onload=()=>{
   $('#main').addClass('animated slideInUp');
   if(window.localStorage.getItem("num")!=null){
@@ -40,8 +39,7 @@ function makein(){ //signin
       let m=$.parseJSON(res);
       //window.plugins.spinnerDialog.hide();
       if(m.status=="OK"){
-        verified=m.verified;
-        startdash($("#walletin").val(),0);
+        startdash($("#walletin").val());
       }else{
         preventform("Account with the provided credentials is not found");
       }
@@ -63,7 +61,7 @@ function submitsignup(){ //signup form check if exist
     success:function(res){
       let m=$.parseJSON(res);
       if(m.status!="OK"){
-        inserttodb();
+        inserttodb($("#walletup").val());
       }else{
         //window.plugins.spinnerDialog.hide();
         preventform("An account with this wallet number already exists");
@@ -73,20 +71,28 @@ function submitsignup(){ //signup form check if exist
 }
 }
 
-function inserttodb(){ //sign up backend handle
+function inserttodb(num){ //sign up backend handle
   if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
-  $.get("http://192.168.0.101:8080/insert").then((res)=>{
+    postforsms(num,1);
+ }
+}
+
+function inserttodbplz(){ //insert to db finally
+   //window.plugins.spinnerDialog.show();
+  $.get("http://192.168.0.112:8080/insert").then((res)=>{
      //window.plugins.spinnerDialog.hide();
     let m=$.parseJSON(res);
     if(m.status=="OK"){
-      postforsms(m.num,1);
+      navigator.notification.alert("Account created!!! You may now sign in using these credentials!!!",()=>{
+        $(".signup").trigger("reset");
+        $("#buttonsignin").click();
+      },"",["OK"]);
     }else{
       preventform("An error occured. Please try again.");
     }
   });
-}
 }
 
 function passnotmatch(){ //validate sign up form
@@ -140,14 +146,14 @@ function fbdatapost(data){ //post data from fb
   }else{
     //window.plugins.spinnerDialog.show();
   $.ajax({
-    url:"http://192.168.0.101:8080/fb_in",
+    url:"http://192.168.0.112:8080/fb_in",
     type:'POST',
     data:data,
     success:function(res){
       let m=$.parseJSON(res);
       //window.plugins.spinnerDialog.hide();
       if(m.status=="OK"){ //already exists
-        startdash(m.num,1);
+        startdash(m.num);
       }else{ //not existed
         showfyp(0);
       }
@@ -196,7 +202,7 @@ function checkifwallet(a,b){ //check if wallet already exists
   if(b!=0){
      //window.plugins.spinnerDialog.show();
     $.ajax({
-      url:"http://192.168.0.101:8080/checkall",
+      url:"http://192.168.0.112:8080/checkall",
       type:"POST",
       data:a,
       success:(res)=>{
@@ -216,7 +222,7 @@ function checkifwallet(a,b){ //check if wallet already exists
   }else{
     //window.plugins.spinnerDialog.show();
   $.ajax({
-    url:"http://192.168.0.101:8080/checkwallet",
+    url:"http://192.168.0.112:8080/checkwallet",
     type:'POST',
     data:a,
     success:(res)=>{
@@ -239,7 +245,7 @@ function postforsms(a,n){ //post for sending smd
   }else{
    //window.plugins.spinnerDialog.show();
   $.ajax({
-    url:"http://192.168.0.101:8080/verifynum",
+    url:"http://192.168.0.112:8080/verifynum",
     type:'POST',
     data:a,
     success:function(res){
@@ -259,9 +265,9 @@ function datastore(num){  //store signup of fb data to db
   if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
-  $.get("http://192.168.0.101:8080/storenow").then((res)=>{
+  $.get("http://192.168.0.112:8080/storenow").then((res)=>{
    if(res=="\"OK\""){
-      startdash(num,1);
+      startdash(num);
     }else{
       preventform("An error occurred. Please try again.");
     }
@@ -302,7 +308,7 @@ function passrecover(data){
   }else{
     //window.plugins.spinnerDialog.show();
   $.ajax({
-    url:"http://192.168.0.101:8080/updatepass",
+    url:"http://192.168.0.112:8080/updatepass",
     type:"POST",
     data:data,
     success:(res)=>{
@@ -322,13 +328,10 @@ function datastored() { //new data stored
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
     //window.plugins.spinnerDialog.show();
-  $.get("http://192.168.0.101:8080/verified").then((result)=>{
+  $.get("http://192.168.0.112:8080/verified").then((result)=>{
    if(result=="\"OK\""){
      //window.plugins.spinnerDialog.hide();
-    navigator.notification.alert("Account created!!! You may now sign in using these credentials!!!",()=>{
-      $(".signup").trigger("reset");
-      $("#buttonsignin").click();
-    },"",["OK"]);
+    inserttodbplz();
    }else{
      preventform("An error occurred. Please try again later.");
    }  
@@ -339,7 +342,6 @@ function datastored() { //new data stored
 function help(a,m,n){
   //window.plugins.numberDialog.promptClear("Enter the code sent to your wallet device", checkit, "", ["Done","Cancel"]);
   navigator.notification.prompt("Enter the code sent to your wallet device",checkit,"",["Done","Cancel"]);
-         
         function checkit(r){
           if(r.buttonIndex==1){
             if(r.input1==m.num.toString()){ 
@@ -359,14 +361,9 @@ function help(a,m,n){
         }
 }
 
-function startdash(num,val){ //function to start dashboard val==1 for fb and 0 for manual
+function startdash(num){ //function to start dashboard val==1 for fb and 0 for manual
   window.localStorage.setItem("num",num);
-  if(val==0){
-   window.localStorage.setItem("verified",verified); 
    window.location.href="dashboard.html";
-  }else{
-   window.location.href="dashboard.html";
-  }
 }
 
 function showsignup(){

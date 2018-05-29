@@ -2,17 +2,17 @@
 <html>
     <head>
     <meta http-equiv="Content-Security-Policy" content="default-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'; media-src *; img-src * filesystem: data:">
-	  <meta name="format-detection" content="telephone=no">
+	<meta name="format-detection" content="telephone=no">
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
     <link rel="stylesheet" type="text/css" href="css/dashboard.css"/>
-	  <link rel="stylesheet" type="text/css" href="bs/css/bootstrap.min.css"/>
-	  <link rel="stylesheet" type="text/css" href="link/materialize-social/materialize-social.css"/>
-	  <link rel="stylesheet" type="text/css" href="link/animate.css"/>
-	  <link rel="stylesheet" href="link/font-awesome.min.css">
-	  <script type="text/javascript" src="link/jquery.js"></script>
-	  <script type="text/javascript" src="link/OpenFB/openfb.js"></script>
-	  <title>DashBoard|CashIt</title>
+	<link rel="stylesheet" type="text/css" href="bs/css/bootstrap.min.css"/>
+	<link rel="stylesheet" type="text/css" href="link/materialize-social/materialize-social.css"/>
+	<link rel="stylesheet" type="text/css" href="link/animate.css"/>
+	<link rel="stylesheet" href="link/font-awesome.min.css">
+	<script type="text/javascript" src="link/jquery.js"></script>
+	<script type="text/javascript" src="link/OpenFB/openfb.js"></script>
+	<title>DashBoard|CashIt</title>
     </head>
     <body>
 	   <header id="heading">
@@ -27,7 +27,7 @@
                       <div class="dropdown-menu dropdown-menu-right">
                           <a class="dropdown-item" onclick="sets(0)">Account Settings</a>
                           <a class="dropdown-item" onclick="sets(1)">Pledge Settings</a>
-                          <a class="dropdown-item" onclick="sets(2)">Load Coins</a>
+                          <a class="dropdown-item" onclick="sets(2)">Withdraw Coins</a>
                           <a class="dropdown-item" onclick="sets(3)">Clear Pledge History</a>
                           <a class="dropdown-item" id="signout" href="#">Sign Out</a>
                       </div>
@@ -44,11 +44,6 @@
          </div>
        </header>
       <main id="main" class="content">
-        <div class="unverified">
-          <p>Your wallet number needs verification before you may proceed</p>
-          <p>Please verify it by clicking button below</p>
-          <button type="button" id="verify">Verify</button>
-        </div>
         
         <div class="nav-home">
           <div class="row ups">
@@ -60,27 +55,32 @@
             <div class="col-sm-4 col-xs-4">
                 <div class="data">
                     <h5 id="name"></h5>
-                    <p id="uid"></p>
                     <p id="wallet"></p>
+                    <p id="uid"></p>
                 </div>
             </div>
             <div class="col-sm-4 col-xs-4"></div>
           </div>
+          <hr>
           <div class="row">
-                <button type="button" class="btn-block btn-primary" id="pledge"><span id="pledge-text"> Pledge</span></button>
-                <button type="button" class="btn-block btn-danger" id="withdraw">Withdraw coins to wallet</button>
+                <button type="button" class=" btn-block btn-primary" id="pledge"><span id="pledge-text"> Pledge</span></button>
           </div>
-            <!--div class="row">
-              <div class="col-sm-12 col-xs-12">
-                <div class="text-center welcome">
-                  <h5 id="welcomet">Welcome to Cash-Cow Club</h5>
-                </div>
-              </div>
-            </div-->
-            
+           <hr>
+          <div class="row">
+            <div class="col-sm-12 col-xs-12 notice">
+                <h5 class="text-center notice-head-text">Notice</h5>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12 col-xs-12">
+                <p class="text-center notice-text">No any notices found</p>
+            </div>
+          </div>
+            <hr>
             <div class="row">
               <div class="col-sm-12 col-xs-12 trans-head">
-                  <h5 class="text-center trans-head-text">Pledge History</h5>
+                  <h5 class="text-center trans-head-text">History</h5>
               </div>
             </div>
               
@@ -89,7 +89,6 @@
                   
                 </div>
             </div>
-
           </div>
         
         <div class="nav-media">

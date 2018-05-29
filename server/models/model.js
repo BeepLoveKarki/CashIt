@@ -29,6 +29,9 @@ function checkdata(data,res,num){
 
 function storedata(data,res,a){
 	delete data["passup"];
+	data["uid"]="3CA"+(Math.floor(Math.random() * 100000) + 10000).toString();
+	data["pledges"]="0";
+	data["pledgedate"]="";
 	MongoClient.connect(url,opt,(err,db)=>{
 	  let dbase=db.db("cashout_db");
 	  dbase.collection("clients").insertOne(data,(err,result)=>{
@@ -44,25 +47,6 @@ function storedata(data,res,a){
 		}
 	  });
 	});
-
-}
-
-function verifiednum(data,res){ //number verification
- MongoClient.connect(url,opt,(err,db)=>{
-  let dbase=db.db("cashout_db");
-  dbase.collection("clients").update({_id:data["_id"]},{$set:{"verified":"yes"}},(err,results)=>{
-    db.close();
-	if(err){
-	   res.send(JSON.stringify("nOK"));
-	}else{
-	  if(results.result.nModified!=0){
-	    res.send(JSON.stringify("OK"));
-	  }else{
-	    res.send(JSON.stringify("nOK")); 
-	  }
-	}
-  });
- });
 
 }
 
@@ -90,11 +74,15 @@ function updatepass(num,pass,res){
 	dbase.collection("clients").findOne({num:num},(err,result)=>{
 	  dbase.collection("clients").update({_id:result["_id"]},{$set:{"password":pass}},(err,results)=>{
 	    db.close();
-		if(results.result.nModified!=0){
-		  res.send(JSON.stringify("OK"));
-		}else{
-		  res.send(JSON.stringify("nOK"));
-		}
+		if(err){
+	      res.send(JSON.stringify("nOK"));
+	    }else{
+		  if(results.result.nModified!=0){
+		   res.send(JSON.stringify("OK"));
+		  }else{
+		   res.send(JSON.stringify("nOK"));
+		 }
+	   }
 	  });
 	 });
 	});
@@ -105,10 +93,14 @@ function checkexist(data,res){
   let dbase=db.db("cashout_db");
   dbase.collection("clients").findOne({num:data["walletin"]},(err,result)=>{
     db.close();
-	if(result==null){  
-	  res.send(JSON.stringify({status:"nOK","verified":""}));
+	if(err){
+	   res.send(JSON.stringify({status:"nOK","verified":""}));
 	}else{
+	 if(result==null){  
+	   res.send(JSON.stringify({status:"nOK","verified":""}));
+	 }else{
 	  comparepass(data["passin"],result.password,result.verified,res);
+	 }
 	}
   });
  });
@@ -124,29 +116,88 @@ function comparepass(p1,p2,verified,res){
   });
 }
 
-function numverify(num,res){
-MongoClient.connect(url,opt,(err,db)=>{
-    let dbase=db.db("cashout_db");
-	dbase.collection("clients").findOne({num:num},(err,result)=>{
-	  dbase.collection("clients").update({_id:result["_id"]},{$set:{"verified":"yes"}},(err,results)=>{
-	    db.close();
-		if(results.result.nModified!=0){
-		  res.send(JSON.stringify("OK"));
-		}else{
-		  res.send(JSON.stringify("nOK"));
-		}
-	  });
-	 });
-	});
+
+function getdata(num,res){
+ MongoClient.connect(url,opt,(err,db)=>{
+   let dbase=db.db("cashout_db");
+   dbase.collection("clients").findOne({num:num},(err,result)=>{
+     db.close();
+	 res.send(JSON.stringify({name:result["name"],coins:result["coins"],uid:result["uid"],dates:result["pledgedate"]}));
+   });
+ });
 }
+
+function pledgedtime(date,number,res){
+   let d=new Date(date);
+   MongoClient.connect(url,opt,(err,db)=>{
+     let dbase=db.db("cashout_db");
+	 dbase.collection("clients").findOne({num:number},(err,result)=>{
+		let data=result["pledgedate"]+d.toLocaleString()+",";
+	    dbase.collection("clients").update({_id:result["_id"]},{$set:{"pledgedate":data}},(err,results)=>{
+		  db.close();
+		  if(results.result.nModified!=0){
+		    res.send(JSON.stringify("OK"));
+		  }else{
+		    res.send(JSON.stringify("nOK"));
+		  }
+		});
+	 });
+   });
+}
+
+function clearpledge(num,res){
+  MongoClient.connect(url,opt,(err,db)=>{
+   let dbase=db.db("cashout_db");
+   dbase.collection("clients").findOne({num:num},(err,result)=>{
+     dbase.collection("clients").update({_id:result["_id"]},{$set:{"pledgedate":""}},(err,results)=>{
+		 db.close();
+		 if(results.result.nModified!=0){
+		    res.send(JSON.stringify("OK"));
+		 }else{
+		    res.send(JSON.stringify("nOK"));
+		 }
+	  });
+    });
+  });
+}
+
+function withdraw(num,pass,date,res){
+ MongoClient.connect(url,opt,(err,db)=>{
+   let dbase=db.db("cashout_db");
+   dbase.collection("clients").findOne({num:num},(err,result)=>{
+     let dates=result["pledgedate"];
+	 dates=dates.slice(0,-1);
+	 let lastdate=dates.split(",").pop();
+	 let diff=Math.floor((new Date(date).getMilliseconds()-new Date(lastdate).getMilliseconds())/(1000*60*60));
+	 if(diff<3){
+	   db.close();
+	   res.send(JSON.stringify("Wait"));
+	 }else{
+	    //perform withdraw using pass and use coins
+	   dbase.collection("clients").update({_id:result["_id"]},{$set:{"coins":0}},(err,results)=>{
+           db.close();
+		   if(results.result.nModified!=0){
+		    res.send(JSON.stringify("OK"));
+		   }else{
+		    res.send(JSON.stringify("nOK"));
+		   }
+	   });
+	 }
+   });
+ });
+}
+
+
 
 
 module.exports={
     checkdata:checkdata,
 	storedata:storedata,
-	verifiednum:verifiednum,
 	checknumall:checknumall,
 	updatepass:updatepass,
 	checkexist:checkexist,
-	numverify:numverify
+	getdata:getdata,
+	pledgedtime:pledgedtime,
+	clearpledge:clearpledge,
+	withdraw:withdraw
 }

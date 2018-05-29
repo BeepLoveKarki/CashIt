@@ -1,7 +1,7 @@
 let db=require('../models/model');
 let misc=require('./misc');
 let bcrypt=require('bcryptjs');
-let data,num;
+let data,num,number;
       
 
 module.exports.controller=function(app) {
@@ -18,15 +18,14 @@ module.exports.controller=function(app) {
    });
    
    app.get('/insert',(req,res)=>{
-     data["num"]=data["walletup"];
-	 delete data["walletup"];
-	 data["verified"]="no";
-	 data["coins"]=0;
 	 misc.hashpass(data,res);
    });
    
    app.get('/verified',(req,res)=>{
-     db.verifiednum(data,res);
+	 data["num"]=data["walletup"];
+	 delete data["walletup"];
+	 data["coins"]=0;
+	 res.send(JSON.stringify("OK"));
    });
    
    app.post('/signin_form',(req,res)=>{
@@ -65,8 +64,22 @@ module.exports.controller=function(app) {
 	 db.storedata(data,res,0);
    });
    
-   app.post('/numin',(req,res)=>{
-     db.numverify(Object.keys(req.body)[0],res);
+   app.post('/getdata',(req,res)=>{
+	 number=req.body["data"];
+     db.getdata(req.body["data"],res);
+   });
+   
+   app.post('/pledge',(req,res)=>{ //////////////////////////////////////
+	  //perform pledge task with req["pass"]
+      db.pledgedtime(req.body["date"],req.body["number"],res);
+   });
+   
+   app.post('/clearpledge',(req,res)=>{
+     db.clearpledge(req.body["num"],res);
+   });
+   
+   app.post('/withdraw',(req,res)=>{
+	 db.withdraw(req.body["num"],req.body["pass"],req.body["date"],res);
    });
 
 }

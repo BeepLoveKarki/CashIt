@@ -29,9 +29,10 @@ function checkdata(data,res,num){
 
 function storedata(data,res,a){
 	delete data["passup"];
-	data["uid"]="3CA"+(Math.floor(Math.random() * 100000) + 10000).toString();
+	data["uid"]="3CU"+(Math.floor(Math.random() * 100000) + 10000).toString();
 	data["pledges"]="0";
 	data["pledgedate"]="";
+	data["withdrawdate"]="";
 	MongoClient.connect(url,opt,(err,db)=>{
 	  let dbase=db.db("cashout_db");
 	  dbase.collection("clients").insertOne(data,(err,result)=>{
@@ -122,7 +123,7 @@ function getdata(num,res){
    let dbase=db.db("cashout_db");
    dbase.collection("clients").findOne({num:num},(err,result)=>{
      db.close();
-	 res.send(JSON.stringify({name:result["name"],coins:result["coins"],uid:result["uid"],dates:result["pledgedate"]}));
+	 res.send(JSON.stringify({name:result["name"],coins:result["coins"],uid:result["uid"],dates:result["pledgedate"],wdates:result["withdrawdate"]}));
    });
  });
 }
@@ -149,7 +150,7 @@ function clearpledge(num,res){
   MongoClient.connect(url,opt,(err,db)=>{
    let dbase=db.db("cashout_db");
    dbase.collection("clients").findOne({num:num},(err,result)=>{
-     dbase.collection("clients").update({_id:result["_id"]},{$set:{"pledgedate":""}},(err,results)=>{
+     dbase.collection("clients").update({_id:result["_id"]},{$set:{"withdrawdate":""}},(err,results)=>{
 		 db.close();
 		 if(results.result.nModified!=0){
 		    res.send(JSON.stringify("OK"));
@@ -169,12 +170,12 @@ function withdraw(num,pass,date,res){
 	 dates=dates.slice(0,-1);
 	 let lastdate=dates.split(",").pop();
 	 let diff=Math.floor((new Date(date).getMilliseconds()-new Date(lastdate).getMilliseconds())/(1000*60*60));
-	 if(diff<3){
+	 if(diff<8){
 	   db.close();
 	   res.send(JSON.stringify("Wait"));
 	 }else{
 	    //perform withdraw using pass and use coins
-	   dbase.collection("clients").update({_id:result["_id"]},{$set:{"coins":0}},(err,results)=>{
+	   dbase.collection("clients").update({_id:result["_id"]},{$dec:{"coins":-50}},(err,results)=>{
            db.close();
 		   if(results.result.nModified!=0){
 		    res.send(JSON.stringify("OK"));
@@ -182,12 +183,45 @@ function withdraw(num,pass,date,res){
 		    res.send(JSON.stringify("nOK"));
 		   }
 	   });
-	 }
+	  }
    });
  });
 }
 
+function withdrawcheck(num,date,res){
+  MongoClient.connect(url,opt,(err,db)=>{
+   let dbase=db.db("cashout_db");
+   dbase.collection("clients").findOne({num:num},(err,result)=>{
+     let dates=result["pledgedate"];
+	 dates=dates.slice(0,-1);
+	 let lastdate=dates.split(",").pop();
+	 let diff=Math.floor((new Date(date).getMilliseconds()-new Date(lastdate).getMilliseconds())/(1000*60*60));
+	 db.close();
+	 if(diff<8){	   
+	   res.send(JSON.stringify("Wait"));
+	 }else{
+	   res.send(JSON.stringify("OK"));
+	 }
+   });
+  });
+}
 
+function withdrawall(num,res){
+  MongoClient.connect(url,opt,(err,db)=>{
+   let dbase=db.db("cashout_db");
+   //withdraw to wallet using API
+   dbase.collection("clients").findOne({num:num},(err,result)=>{
+   dbase.collection("clients").update({_id:result["_id"]},{$set:{"coins":0}},(err,results)=>{
+      db.close();
+	  if(results.result.nModified!=0){
+		  res.send(JSON.stringify("OK"));
+	  }else{
+		  res.send(JSON.stringify("nOK"));
+	  }
+   });
+  });
+ });
+}
 
 
 module.exports={
@@ -199,5 +233,7 @@ module.exports={
 	getdata:getdata,
 	pledgedtime:pledgedtime,
 	clearpledge:clearpledge,
-	withdraw:withdraw
+	withdraw:withdraw,
+	withdrawcheck:withdrawcheck,
+	withdrawall:withdrawall
 }

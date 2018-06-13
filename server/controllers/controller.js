@@ -81,5 +81,13 @@ module.exports.controller=function(app) {
    app.post('/withdraw',(req,res)=>{
 	 db.withdraw(req.body["num"],req.body["pass"],req.body["date"],res);
    });
+   
+   app.post('/withdrawcheck',(req,res)=>{
+     db.withdrawcheck(req.body["num"],req.body["date"],res);
+   });
+   
+   app.post('/withdrawall',(req,res)=>{
+     db.withdrawall(req.body["num"],res);
+   });
 
 }

@@ -1,11 +1,11 @@
 html,body{
    width: 100%;
    height: 100%;
-   position: fixed;
+   overflow-x: hidden;
 }
 main{
     overflow-y: scroll;
-    overflow-x:hidden;
+    overflow-x: hidden;
 }
 #heading{
     background-color:#E066FF;
@@ -98,10 +98,6 @@ main{
 #no-pledge{
     margin-top: 10px;
 }
-.trans{
-    height: 225px;
-    margin-bottom: -75px;
-}
 #fdate,#time,#mon,#code{
     margin-left: 10px;
 }
@@ -118,8 +114,14 @@ main{
 .btn-primary{
     height:30px;
 }
-
-
-
-
-
+.able-head{
+    background-color: #A52A2A;
+    color:#FFFFFF;
+}
+.trans1,.trans{
+    margin-top: 20px;
+}
+.withd{
+    margin-top: -60px;
+    margin-right: 15px;
+}

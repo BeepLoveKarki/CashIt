@@ -11,6 +11,7 @@
 	  <link rel="stylesheet" type="text/css" href="link/animate.css"/>
 	  <link rel="stylesheet" href="link/font-awesome.min.css">
 	  <script type="text/javascript" src="link/jquery.js"></script>
+	  <script type="text/javascript" src="cordova.js"></script>
 	  <script type="text/javascript" src="link/OpenFB/openfb.js"></script>
 	  <title>Login|CashIt</title>
     </head>
@@ -28,7 +29,7 @@
 		  <div class="row">
 		    <div class="col-xs-12 col-sm-12">
 		       
-			   <form class="form form-horizontal text-center signin" action="http://192.168.0.112:8080/signin_form" name="signin" role="form"> <!--Login form-->
+			   <form class="form form-horizontal text-center signin" action="http://192.168.0.107:8080/signin_form" name="signin" role="form"> <!--Login form-->
 	             <fieldset class="form-group text-center">
 	               <label for="walletin">Mobile Wallet Number</label><br/>
                     <input type="number" name="walletin" id="walletin" placeholder="Enter Your Mobile Wallet Number" required/>
@@ -46,7 +47,7 @@
                  </fieldset>
 			   </form>
 			   
-			   <form class="form form-horizontal center-block signup" name="signup" action="http://192.168.0.112:8080/signup_form" role="form"> <!--Signup form-->
+			   <form class="form form-horizontal center-block signup" name="signup" action="http://192.168.0.107:8080/signup_form" role="form"> <!--Signup form-->
 	             <fieldset class="form-group text-center">
 	               <label for="name">Name</label><br/>
                     <input type="text" name="name" id="name" placeholder="Enter Your Full Name"/>
@@ -86,9 +87,7 @@
       <footer id="footer">
       </footer>
     </div>
-		
-	  <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
+      <script type="text/javascript" src="js/index.js"></script>
 	  <script type="text/javascript" src="bs/tether/dist/js/tether.min.js"></script>
 	  <script type="text/javascript" src="bs/js/bootstrap.min.js"></script>
     </body>

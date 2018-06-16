@@ -30,14 +30,14 @@ function makein(){ //signin
   else if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
-     //window.plugins.spinnerDialog.show();
+     //SpinnerDialog.show();
   $.ajax({
     url:$(".signin").attr("action"),
     type:'POST',
     data:$(".signin").serialize(),
     success:function(res){
       let m=$.parseJSON(res);
-      //window.plugins.spinnerDialog.hide();
+      //////SpinnerDialog.hide();
       if(m.status=="OK"){
         startdash($("#walletin").val());
       }else{
@@ -53,7 +53,7 @@ function submitsignup(){ //signup form check if exist
   if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{ 
-  //window.plugins.spinnerDialog.show();
+  //SpinnerDialog.show();
   $.ajax({
     url:$(".signup").attr("action"),
     type:'POST',
@@ -63,7 +63,7 @@ function submitsignup(){ //signup form check if exist
       if(m.status!="OK"){
         inserttodb($("#walletup").val());
       }else{
-        //window.plugins.spinnerDialog.hide();
+        //////SpinnerDialog.hide();
         preventform("An account with this wallet number already exists");
       }
     }
@@ -73,6 +73,7 @@ function submitsignup(){ //signup form check if exist
 
 function inserttodb(num){ //sign up backend handle
   if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
+    //////SpinnerDialog.hide();
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
     postforsms(num,1);
@@ -80,9 +81,9 @@ function inserttodb(num){ //sign up backend handle
 }
 
 function inserttodbplz(){ //insert to db finally
-   //window.plugins.spinnerDialog.show();
-  $.get("http://192.168.0.112:8080/insert").then((res)=>{
-     //window.plugins.spinnerDialog.hide();
+   //SpinnerDialog.show();
+  $.get("http://192.168.0.107:8080/insert").then((res)=>{
+     //////SpinnerDialog.hide();
     let m=$.parseJSON(res);
     if(m.status=="OK"){
       navigator.notification.alert("Account created!!! You may now sign in using these credentials!!!",()=>{
@@ -144,14 +145,14 @@ function fbdatapost(data){ //post data from fb
    if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
-    //window.plugins.spinnerDialog.show();
+    //SpinnerDialog.show();
   $.ajax({
-    url:"http://192.168.0.112:8080/fb_in",
+    url:"http://192.168.0.107:8080/fb_in",
     type:'POST',
     data:data,
     success:function(res){
       let m=$.parseJSON(res);
-      //window.plugins.spinnerDialog.hide();
+      //////SpinnerDialog.hide();
       if(m.status=="OK"){ //already exists
         startdash(m.num);
       }else{ //not existed
@@ -175,8 +176,7 @@ function showfyp(b){ //fyp dialog box
   }else{
     c="We require to verify your wallet number before proceeding. So, Please enter it below.";
   }
-  //window.plugins.numberDialog.promptClear(c, callback, "", ["OK","Cancel"]);
-  navigator.notification.prompt(c,callback,'',["OK","Cancel"]);
+  window.plugins.numberDialog.promptClear(c, callback," ",["OK","Cancel"]);
   function callback(r){
     if(r.buttonIndex==1){
       if(r.input1.length!=10 || isNaN(r.input1)){
@@ -200,13 +200,13 @@ function checkifwallet(a,b){ //check if wallet already exists
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
   if(b!=0){
-     //window.plugins.spinnerDialog.show();
+     //SpinnerDialog.show();
     $.ajax({
-      url:"http://192.168.0.112:8080/checkall",
+      url:"http://192.168.0.107:8080/checkall",
       type:"POST",
       data:a,
       success:(res)=>{
-       //window.plugins.spinnerDialog.hide();
+       //////SpinnerDialog.hide();
        let m=$.parseJSON(res);
        if(m.status=="OK"){
          postforsms(a,b);
@@ -220,14 +220,14 @@ function checkifwallet(a,b){ //check if wallet already exists
       }
     })
   }else{
-    //window.plugins.spinnerDialog.show();
+    //SpinnerDialog.show();
   $.ajax({
-    url:"http://192.168.0.112:8080/checkwallet",
+    url:"http://192.168.0.107:8080/checkwallet",
     type:'POST',
     data:a,
     success:(res)=>{
       let m=$.parseJSON(res);
-      //window.plugins.spinnerDialog.hide();
+      //////SpinnerDialog.hide();
       if(m.status!="OK"){
          postforsms(a,0);
       }else{
@@ -241,15 +241,15 @@ function checkifwallet(a,b){ //check if wallet already exists
 
 function postforsms(a,n){ //post for sending smd
   if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
+    //////SpinnerDialog.hide();
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
-   //window.plugins.spinnerDialog.show();
   $.ajax({
-    url:"http://192.168.0.112:8080/verifynum",
+    url:"http://192.168.0.107:8080/verifynum",
     type:'POST',
     data:a,
     success:function(res){
-      //window.plugins.spinnerDialog.hide();
+      //////SpinnerDialog.hide();
       let m=$.parseJSON(res);
       if(m.status=="OK"){
          help(a,m,n);
@@ -265,7 +265,7 @@ function datastore(num){  //store signup of fb data to db
   if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
-  $.get("http://192.168.0.112:8080/storenow").then((res)=>{
+  $.get("http://192.168.0.107:8080/storenow").then((res)=>{
    if(res=="\"OK\""){
       startdash(num);
     }else{
@@ -276,43 +276,29 @@ function datastore(num){  //store signup of fb data to db
 }
 
 function datarecover(){ //recover password
- navigator.notification.prompt("Enter new password for your account",(r)=>{
-   if(r.buttonIndex==1){
-     if(r.input1.length!=0){
-       passrecover(r.input1);
-     }else{
-       navigator.notification.alert("Password cannot be empty",()=>{
-          datarecover();
-       },"",["OK"]);
-     }
-   }
- },"",["OK","Cancel"]);
-  
- /*let options = {
-   title: "",
-   message: "Please enter new password for your account",
-  };
-  PasswordDialogPlugin.showEnterPassword(options,(result)=>{
-    if(!result.cancel){
-      alert(result.password);
-    }
-  },(err)=>{
-    alert(err.toString());
-  });*/
+ let options = {
+  title: " ",
+  message: "Please enter new password."
+};
 
+PasswordDialogPlugin.showConfirmPassword(options,(result)=>{
+      if (!result.cancel) {
+          passrecover(result.password);
+      }
+  },(err)=>{});
 }
 
 function passrecover(data){
   if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
-    //window.plugins.spinnerDialog.show();
+    //SpinnerDialog.show();
   $.ajax({
-    url:"http://192.168.0.112:8080/updatepass",
+    url:"http://192.168.0.107:8080/updatepass",
     type:"POST",
     data:data,
     success:(res)=>{
-      //window.plugins.spinnerDialog.hide();
+      //////SpinnerDialog.hide();
       if(res=="\"OK\""){
        preventform("Password updated. You may now log in using new password");
       }else{
@@ -327,10 +313,10 @@ function datastored() { //new data stored
   if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
-    //window.plugins.spinnerDialog.show();
-  $.get("http://192.168.0.112:8080/verified").then((result)=>{
+    //SpinnerDialog.show();
+  $.get("http://192.168.0.107:8080/verified").then((result)=>{
    if(result=="\"OK\""){
-     //window.plugins.spinnerDialog.hide();
+    //////SpinnerDialog.hide();
     inserttodbplz();
    }else{
      preventform("An error occurred. Please try again later.");
@@ -340,8 +326,7 @@ function datastored() { //new data stored
 }
 
 function help(a,m,n){
-  //window.plugins.numberDialog.promptClear("Enter the code sent to your wallet device", checkit, "", ["Done","Cancel"]);
-  navigator.notification.prompt("Enter the code sent to your wallet device",checkit,"",["Done","Cancel"]);
+  window.plugins.numberDialog.promptClear("Enter the code sent to your wallet device", checkit, " ", ["Done","Cancel"]);
         function checkit(r){
           if(r.buttonIndex==1){
             if(r.input1==m.num.toString()){ 

@@ -19,7 +19,21 @@ function updatepass(num,pass,res){
    });
 }
 
+function editdata(data,res){
+ if(data["type"]=="pass"){
+  bcrypt.genSalt(10,(err,salt)=>{
+    bcrypt.hash(data["value"],salt,(err,hash)=>{
+      data["value"]=hash;
+	  db.editdata(data,res);
+	});
+   });
+ }else{
+   db.editdata(data,res);
+ }
+}
+
 module.exports={
    hashpass:hashpass,
-   updatepass:updatepass
+   updatepass:updatepass,
+   editdata:editdata
 }

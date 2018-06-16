@@ -11,14 +11,14 @@ module.exports.controller=function(app) {
    });
    
    app.post('/signup_form',(req,res)=>{
-	 data=req.body;
+     data=req.body;
 	 delete data["conwalletup"];
-	 delete data["conpassup"];
+     delete data["conpassup"];
 	 db.checkdata(data,res,2);
    });
    
    app.get('/insert',(req,res)=>{
-	 misc.hashpass(data,res);
+	   misc.hashpass(data,res);
    });
    
    app.get('/verified',(req,res)=>{
@@ -53,15 +53,16 @@ module.exports.controller=function(app) {
    });
    
    app.post('/verifynum',(req,res)=>{
-	 let num=Math.floor((Math.random()*100000)+10000);
-	 console.log(num);
-     res.send(JSON.stringify({status:"OK",num:num}));
+	  let number=Math.floor((Math.random()*100000)+10000);
+	  console.log(number);
+	  //db.sendsms(num,number,res);
+      res.send(JSON.stringify({status:"OK",num:number}));
    });
    
    app.get('/storenow',(req,res)=>{
      data["num"]=num;
-	 data["coins"]=0;
-	 db.storedata(data,res,0);
+	   data["coins"]=0;
+	   db.storedata(data,res,0);
    });
    
    app.post('/getdata',(req,res)=>{
@@ -79,7 +80,11 @@ module.exports.controller=function(app) {
    });
    
    app.post('/withdraw',(req,res)=>{
-	 db.withdraw(req.body["num"],req.body["pass"],req.body["date"],res);
+	 db.withdraw(req.body["num"],req.body["pass"],req.body["index"],req.body["date"],res,0);
+   });
+   
+   app.post('/withdraw45',(req,res)=>{
+     db.withdraw(req.body["num"],req.body["pass"],0,req.body["date"],res,1);
    });
    
    app.post('/withdrawcheck',(req,res)=>{
@@ -87,7 +92,23 @@ module.exports.controller=function(app) {
    });
    
    app.post('/withdrawall',(req,res)=>{
-     db.withdrawall(req.body["num"],res);
+     db.withdrawall(req.body["num"],req.body["date"],res);
+   });
+   
+   app.post('/edit',(req,res)=>{
+     misc.editdata(req.body,res);
+   });
+   
+   app.post('/withdrawlim',(req,res)=>{
+	   db.withdrawlim(req.body["num"],req.body["date"],res);
+   });
+   
+   app.post('/getptimes',(req,res)=>{
+      db.checkptimes(req.body["num"],req.body["date"],res);
+   });
+   
+   app.post('/getwtimes',(req,res)=>{
+      db.checkwtimes(req.body["num"],req.body["date"],res);
    });
 
 }

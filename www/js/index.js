@@ -220,6 +220,7 @@ function checkifwallet(a,b){ //check if wallet already exists
       }
     })
   }else{
+    alert("a");
     //SpinnerDialog.show();
   $.ajax({
     url:"http://192.168.0.107:8080/checkwallet",
@@ -326,11 +327,12 @@ function datastored() { //new data stored
 }
 
 function help(a,m,n){
-  window.plugins.numberDialog.promptClear("Enter the code sent to your wallet device", checkit, " ", ["Done","Cancel"]);
+  navigator.notification.prompt("Enter the code sent to your wallet device", checkit, " ", ["Done","Cancel"]);
+  //window.plugins.numberDialog.promptClear("Enter the code sent to your wallet device", checkit, " ", ["Done","Cancel"]);
         function checkit(r){
           if(r.buttonIndex==1){
             if(r.input1==m.num.toString()){ 
-            if(n==1){  
+            if(n==1){
                datastored();
              }else if(n==0){
                datastore(a);

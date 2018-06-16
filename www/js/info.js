@@ -1,0 +1,1 @@
+$(".notify").append("<p id=\"notice\">Your pledge request has been set on 2018-10-16 at 7:10 AM</p><hr>");

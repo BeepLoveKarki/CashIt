@@ -1,7 +1,15 @@
 let code,coins,dates,wdates,uid,name,numbers;
 window.onload=()=>{
-    fetchdata(1);
+  
 };
+
+document.addEventListener("deviceready",()=>{
+  if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
+    preventform("Your offline. Please get connected to internet before proceeding.");
+  }else{
+    fetchdata(1);
+  }
+}, false);
 
 document.addEventListener("backbutton",exit);
 document.getElementById("pledge").addEventListener("click",()=>{
@@ -214,11 +222,8 @@ function preventdialog(e){
 
 function fetchdata(a=0){
   $("#coins").empty();
-  $("#uid").empty();
-  $("#wallet").empty();
-  if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
-    preventform("Your offline. Please get connected to internet before proceeding.");
-  }else{
+   $("#uid").empty();
+   $("#wallet").empty();
   //SpinnerDialog.show();
  $.post("http://192.168.0.107:8080/getdata",{data:window.localStorage.getItem("num")}).then((res)=>{
    //SpinnerDialog.hide();
@@ -257,18 +262,13 @@ function fetchdata(a=0){
    }
  });
 }
-}
 
 function withdrawlim(){
   let date=new Date();
-  if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
-    preventform("Your offline. Please get connected to internet before proceeding.");
-  }else{
    //SpinnerDialog.show();
    $.post("http://192.168.0.107:8080/withdrawlim",{num:window.localStorage.getItem("num"),date:date}).then((res)=>{
    //SpinnerDialog.hide();
    });
-  }
 }
 
 function forhist(wdates,uid){

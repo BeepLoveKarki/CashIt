@@ -4,8 +4,14 @@ let bcrypt=require('bcryptjs');
 let data,num,number;
       
 
-module.exports.controller=function(app) {
-
+module.exports.controller=function(app,io) {
+   
+   io.sockets.on('connection', function (socket) {
+	 socket.on('number',(num)=>{
+	   db.sendnotify(socket,num);
+	 });
+   });
+   
    app.get('/',(req,res)=>{
         res.send("OK");
    });
@@ -34,6 +40,7 @@ module.exports.controller=function(app) {
    
    app.post('/fb_in',(req,res)=>{
 	 data=req.body;
+	 //console.log(data);
 	 db.checkdata(data,res,0); //check if fb id already exists
    });
    
@@ -44,6 +51,7 @@ module.exports.controller=function(app) {
    
    app.post('/checkall',(req,res)=>{
     num=Object.keys(req.body)[0].replace(/[\[\]']/g,"");
+	console.log(num);
 	db.checknumall(num,res);
    });
    
@@ -55,8 +63,10 @@ module.exports.controller=function(app) {
    app.post('/verifynum',(req,res)=>{
 	  let number=Math.floor((Math.random()*100000)+10000);
 	  console.log(number);
-	  //db.sendsms(num,number,res);
-      res.send(JSON.stringify({status:"OK",num:number}));
+	  num=Object.keys(req.body)[0].replace(/[\[\]']/g,"");
+	  //console.log(num);
+	  db.sendsms(num,number,res);
+      //res.send(JSON.stringify({status:"OK",num:number}));
    });
    
    app.get('/storenow',(req,res)=>{
@@ -72,7 +82,7 @@ module.exports.controller=function(app) {
    
    app.post('/pledge',(req,res)=>{ //////////////////////////////////////
 	  //perform pledge task with req["pass"]
-      db.pledgedtime(req.body["date"],req.body["number"],res);
+      db.pledgedtime(req.body["date"],req.body["number"],req.body["pass"],res);
    });
    
    app.post('/clearpledge',(req,res)=>{
@@ -109,6 +119,10 @@ module.exports.controller=function(app) {
    
    app.post('/getwtimes',(req,res)=>{
       db.checkwtimes(req.body["num"],req.body["date"],res);
+   });
+   
+   app.post('/sendseen',(req,res)=>{
+       db.notifyseen(req.body["num"],res);
    });
 
 }

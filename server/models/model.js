@@ -1,10 +1,27 @@
+let amount,pnum='';
 let MongoClient=require('mongodb').MongoClient;
 let bcrypt=require('bcryptjs');
 let url="mongodb://127.0.0.1:27017/";
 let opt={ useNewUrlParser: true };
 const { SMSMessage, SMSMessageConfig } = require("hubtel-mx");
+const {MobileMoney,MobileMoneyConfig,getErrorMessageFromResponseCode } = require("hubtel-mx");
+
+ 
 require('dotenv').load();
 
+const config = new SMSMessageConfig({
+    clientId: process.env.clientId,
+    clientSecret: process.env.clientSecret,
+});
+
+const config1 = new MobileMoneyConfig({
+    clientId: process.env.clientId,
+    clientSecret: process.env.clientSecret,
+    merchantAccountNumber: process.env.merchantAccountNumber
+});
+
+const message = new SMSMessage(config);
+const mobileMoney = new MobileMoney(config1);
 
 function checkdata(data,res,num){
   let l;
@@ -37,19 +54,22 @@ function storedata(data,res,a){
 	data["withdrawdate"]="";
 	data["pledge"]=false;
 	data["count"]=0;
+	data["owncount"]=1;
 	MongoClient.connect(url,opt,(err,db)=>{
 	  let dbase=db.db("cashcow_db");
 	  dbase.collection("clients").insertOne(data,(err,result)=>{
-	    db.close();
-		if(err){
+	   dbase.collection("notification").insertOne({num:data["num"],text:"",status:""},(err,result1)=>{
+		 db.close();
+		 if(err){
 		  res.send(JSON.stringify("nOK"));
-		}else{
+		 }else{
 		 if(a==0){
 		  res.send(JSON.stringify("OK"));
 		 }else{
 		   res.send(JSON.stringify({status:"OK",num:data["num"]}));
 		 }
 		}
+	   });
 	  });
 	});
 
@@ -132,32 +152,148 @@ function getdata(num,res){
  });
 }
 
-function pledgedtime(date,number,res){
-   let d=new Date(date);
+function pledgedtime(date,number,pass,res){
+ /*mobileMoney.receive({
+        CustomerMsisdn: "233"+number,
+        Channel: "mtn-gh",
+        Amount: 55,
+        ClientReference: pass
+    }).then(responseJSON => {
+        console.log(responseJSON);
+        console.log("Response message: ",getErrorMessageFromResponseCode(responseJSON.ResponseCode));
+		pledgedtime1(date,number,res);
+    }).catch(err => {
+		res.send(JSON.stringify("nOK"));
+	});*/
+	pledgedtime1(date,number,res);
+}
+
+
+function pledgedtime1(date,number,res){
+   let d=new Date(date),sets,sets1;
    let e=d.getFullYear()+'-'+(d.getMonth()+1)+" ptimes";
    MongoClient.connect(url,opt,(err,db)=>{
-  let dbase=db.db("cashcow_db");
-	 dbase.collection("clients").findOne({num:number},(err,result)=>{
+   let dbase=db.db("cashcow_db");
+   dbase.collection("clients").findOne({num:number},(err,result)=>{
 		let newval=parseInt(result[e])+1;
-	    dbase.collection("clients").update({_id:result["_id"]},{$set:{[e]:newval,"pledge":true}},(err,results)=>{
-		  if(results.result.nModified!=0){
-				dbase.collection("clients").updateMany({"pledge":true},{$inc:{"count":1}},(err,results)=>{
-					if(results){
-					dbase.collection("clients").find({"count":3,"pledge":true},(err,result)=>{
-					   let data=result["pledgedate"]+d.toLocaleString()+",";
-					   dbase.collection("clients").update({_id:result["_id"]},{$set:{"pledgedate":data,"pledge":false,"count":0,},$inc:{"coins":70}},(err,result)=>{
-					      db.close();	
-					      res.send(JSON.stringify("OK"));
-					   });
+		/*let newcount=parseInt(result["owncount"])+1;
+		if(pnum!=number){*/
+		  sets={[e]:newval,"pledge":true};
+		/*}else{
+		  sets={[e]:newval,"pledge":true,"owncount":newcount};
+		}*/
+		//pnum=number;
+	    dbase.collection("clients").findOneAndUpdate({_id:result["_id"]},{$set:sets},(err,results)=>{
+		  if(results){
+				dbase.collection("clients").updateMany({"pledge":true},{$inc:{"count":1}},(err,results1)=>{
+				   if(results1.result.nModified!=0){
+					 /*dbase.collection("clients").findOne({"count":4},(err,results2)=>{
+					   if(results2!=undefined){
+						let data=results2["pledgedate"]+d.toLocaleString()+",";*/
+						pledgeit(db,results2,data,res,date,number);
+					  }else{
+					    notify(res,db,number,0,date);
+					  }
 					});
-				}
+				  }
 				});
-		  }else{
+		    }else{
 		    res.send(JSON.stringify("nOK"));
 		  }
 		});
 	 });
    });
+}
+
+
+function pledgeit(db,results2,data,res,date,number){
+        let dbase=db.db("cashcow_db");
+         dbase.collection("clients").findOne({_id:results2["_id"]},(err,resit)=>{
+		   let incs,sets;
+		   //if(parseInt(resit["owncount"])==1){
+		     incs={"coins":70};
+		     sets={"pledgedate":data,"count":0,"pledge":false};
+		   /*}else{
+		     incs={"coins":70,"count":-1,"owncount":-1};
+		     sets={"pledgedate":data};
+		   }*/
+           dbase.collection("clients").update({_id:results2["_id"]},{$set:sets,$inc:incs},(err,results3)=>{
+			  fullfilled(db,results2,res,date,number);  //only for notification
+		   });
+         });
+}
+
+
+function fullfilled(db,resume,res,date,newnum=null){
+   let d=new Date(date);
+   let dbase=db.db("cashcow_db");
+   dbase.collection("notification").findOne({num:resume["num"]},(err,results4)=>{
+       let newtext=results4["text"]+"Your pledge request has been fulfilled on "+d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" at "+timeshow(d)+",";
+	   let newstat=results4["status"]+"false,";
+	   dbase.collection("notification").update({_id:results4["_id"]},{$set:{"text":newtext,"status":newstat}},(err,results5)=>{
+		   notify(res,db,newnum,0,date);
+	  });
+  });
+}
+
+function notify(res,db,number,n,date){
+	let dbase=db.db("cashcow_db");
+	let text;
+	let d=new Date(date);
+	if(n==0){
+	  //send notification of pledge on socket event notification
+	  text="Your pledge request has been set on "+d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" at "+timeshow(d)+",";
+	  
+	}else{
+		text="You have withdrawn "+amount.toString()+" coins to wallet on "+d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" at "+timeshow(d)+",";
+	   //send notification of withdrawal of amount GHC event notification
+	}
+    dbase.collection("notification").findOne({num:number},(err,result)=>{
+	  let text1=result["text"]+text;
+	  let status1=result["status"]+"false,";
+	  dbase.collection("notification").update({_id:result["_id"]},{$set:{"text":text1,"status":status1}},(err,result1)=>{
+	     db.close();
+		 res.send(JSON.stringify("OK"));
+	  });
+	});
+}
+
+function timeshow(date){
+  let r;
+  let h=parseInt(date.getHours());
+  let m=parseInt(date.getMinutes());
+  let s=parseInt(date.getSeconds());
+  if(h>12){
+    h-=12;
+    r="PM";
+  }else{
+    r="AM";
+  }
+  if(m<10){
+     m="0"+m;
+  }
+  if(s<10){
+    s="0"+s;
+  }
+  return h.toString()+":"+m.toString()+":"+s.toString()+" "+r;
+}
+
+function notifyseen(num,res){
+  MongoClient.connect(url,opt,(err,db)=>{
+   let dbase=db.db("cashcow_db");
+   dbase.collection("notification").findOne({num:num},(err,result)=>{
+     let stats=result["status"].split(",").slice();
+	 stats.pop();
+	 stats.forEach((val,index)=>{
+	   stats[index]="true";
+	 });
+	 let stat1=stats.join(",")+",";
+	 dbase.collection("notification").update({_id:result["_id"]},{$set:{"status":stat1}},(err,result)=>{
+	    res.send(JSON.stringify("OK"));
+	 });
+  });
+ });
+
 }
 
 function clearpledge(num,res){
@@ -179,11 +315,11 @@ function clearpledge(num,res){
 function withdraw(num,pass,index,date,res,c){
  let a=new Date(Date.parse(date));
  let de = a.getFullYear()+'-'+(a.getMonth()+1)+'-'+a.getDate()+" wtimes"; 
- let lastdate,lastdate1,newwdates;
+ let lastdate,lastdate1,newwdates,dates,amt;
  MongoClient.connect(url,opt,(err,db)=>{
    let dbase=db.db("cashcow_db");
    dbase.collection("clients").findOne({num:num},(err,result)=>{
-     let dates=result["pledgedate"];
+	 dates=result["pledgedate"];
 	 dates=dates.slice(0,-1);
 	 lastdate=dates.split(",").reverse()[index];
 	 let diff=Math.floor((new Date(date).getTime()-new Date(lastdate).getTime())/(1000*60*60));
@@ -193,26 +329,52 @@ function withdraw(num,pass,index,date,res,c){
 	 }else{*/
 	    //perform withdraw using pass and use coins
 		//if c==1 withdraw 45 else 50
-	   let lastdate1=dates.split(",").reverse();
-	   lastdate1.splice(index,1);
-	   if(lastdate1.length!=0){
-	     lastdate1=lastdate1.join(",")+",";
+	   if(c==1){
+	     amt=45;
 	   }else{
-	     lastdate1=lastdate1.join(",");
+	     amt=70;
 	   }
-	   newwdates=result["withdrawdate"]+lastdate+",";
+     /*mobileMoney.send({
+        RecipientMsisdn: num,
+        Channel: "tigo-gh",
+        Amount:amt,
+        ClientReference: pass
+     }).then(responseJSON=> {
+		helpwithdraw(dbase,res,dates);
+	 }).catch((err) => {
+	    res.send(JSON.stringify("nOK"));
+		//helpwithdraw(dbase,res,dates);
+	 });*/
+	   helpwithdraw(db,res,dates,amt,num,date,result,de,lastdate,c); //comment this out later
+	 //}
+   });
+  });
+}
+
+function helpwithdraw(db,res,dates,amt,num,date,result,de,lastdate,c){
+	   let dbase=db.db("cashcow_db");
+	   let lastdate1=dates.split(",").slice();
+	   let newwdates;
+	   if(c==0){
+		  let lastdates=lastdate1.pop();
+		  newwdates=result["withdrawdate"]+lastdates+",";
+		  lastdate1=lastdate1.join(",")+",";
+	   }else{
+		 newwdates=result["withdrawdate"]+lastdate+"a,";
+	     lastdate1="";
+	   }
 	   let newcoins=parseInt(result["coins"])-70;
 	   let newval=parseInt(result[de])+1;
 	   dbase.collection("clients").update({_id:result["_id"]},{$set:{"pledgedate":lastdate1,"withdrawdate":newwdates,"coins":newcoins,[de]:newval}},(err,results)=>{
 		   if(results.result.nModified!=0){
-		     res.send(JSON.stringify("OK"));
+		     amount=amt;
+			 //add notification of withdrawing GHC equal to amt
+			 //res.send(JSON.stringify("OK"))
+			 notify(res,db,num,1,date);
 		   }else{
 		     res.send(JSON.stringify("nOK"));
 		   }
 	   });
-	  //}
-   });
- });
 }
 
 function withdrawcheck(num,date,res){
@@ -234,43 +396,60 @@ function withdrawcheck(num,date,res){
 }
 
 function withdrawall(num,date,res){
-  let len;
+  let len,pdates;
   let a=new Date(Date.parse(date));
   let c = a.getFullYear()+'-'+(a.getMonth()+1)+'-'+a.getDate()+" wtimes"; 
   MongoClient.connect(url,opt,(err,db)=>{
    let dbase=db.db("cashcow_db");
    dbase.collection("clients").findOne({num:num},(err,result)=>{
-    let pdates=result["pledgedate"].split(",").reverse();
+    pdates=result["pledgedate"].split(",").reverse();
     pdates.splice(0,-1);
     pdates.forEach((val,index)=>{
      if(val.length==0){
 	   pdates.splice(index,1);
 	 }
     });
-    //withdraw all except one to wallet (pdates.length-1)*70
-	let len=pdates.length-1;
-    let newcoins=parseInt(result["coins"])-(pdates.length-1)*70;
+	len=pdates.length;
+	amount=(len-1)*70;
+	/*mobileMoney.send({
+        RecipientMsisdn: num,
+        Channel: "tigo-gh",
+        Amount:amt,
+        ClientReference: pass
+     }).then(responseJSON=> {
+		helpwithdrawall(pdates,db,dbase,res);
+	 }).catch((err) => {
+	    res.send(JSON.stringify("nOK"));
+		//helpwithdrawall(pdates,db,dbase,res);
+	 });*/
+	 helpwithdrawall(pdates,db,dbase,res,num,date,result,len,c); //comment this out later
+  });
+ });
+
+}
+
+function helpwithdrawall(pdates,db,dbase,res,num,date,result,len,c){
+    let newcoins=parseInt(result["coins"])-(len-1)*70;
     let wdates=pdates.slice();
     wdates.splice(0,1);
     wdates=result["withdrawdate"]+wdates.reverse().toString()+",";
-    pdates=pdates.shift()+",";
-    let wtimes=parseInt(result[c])+len;
-	if(wtimes>5){
+    pdates=pdates.shift()+","
+	let wtimes=len+parseInt(result[c]);
+	if(len>=5){
 	  db.close();
 	  res.send(JSON.stringify("reached"));
 	}else{
       dbase.collection("clients").update({_id:result["_id"]},{$set:{"coins":newcoins,"pledgedate":pdates,"withdrawdate":wdates,[c]:wtimes}},(err,results)=>{
-        db.close();
+		//db.close();
 	    if(results.result.nModified!=0){
-		  res.send(JSON.stringify("OK"));
+		  notify(res,db,num,1,date);
 	    }else{
 		  res.send(JSON.stringify("nOK"));
 	    }
       });
 	}
-  });
- });
 }
+
 
 function editdata(data,res){
  let val;
@@ -314,14 +493,14 @@ function withdrawlim(num,date,res){
 	    dbase.collection("clients").update({_id:result["_id"]},e,(err,results)=>{
 				dbase.collection("clients").update({_id:result["_id"]},b,(err,results)=>{
 					db.close();
-			    pledgelim(num,a,res);
+			       pledgelim(num,a,res);
 			});
 		});
 	 }else{
 	  if(result[c]==undefined){
 	     dbase.collection("clients").update({_id:result["_id"]},b,(err,results)=>{
 				db.close();
-			  pledgelim(num,a,res);
+			    pledgelim(num,a,res);
 		 });
 	  }
 	 }
@@ -342,12 +521,14 @@ MongoClient.connect(url,opt,(err,db)=>{
 	    dbase.collection("clients").update({_id:result["_id"]},i,(err,results)=>{
 			dbase.collection("clients").update({_id:result["_id"]},g,(err,results)=>{
 				db.close();
+				res.send(JSON.stringify("OK"));
 			});
 		});
 	 }else{
 	  if(result[f]==undefined){
 	     dbase.collection("clients").update({_id:result["_id"]},g,(err,results)=>{
 				db.close();
+				res.send(JSON.stringify("OK"));
 		 });
 	  }
 	 }
@@ -377,7 +558,7 @@ function checkwtimes(num,date,res){
   MongoClient.connect(url,opt,(err,db)=>{
     let dbase=db.db("cashcow_db");
     dbase.collection("clients").findOne({num:num},(err,result)=>{
-	  if(parseInt(result[c])==5){
+	  if(parseInt(result[c])>=5){
 	    res.send(JSON.stringify("nOK"));
 	  }else{
 	    res.send(JSON.stringify("OK"));
@@ -387,21 +568,33 @@ function checkwtimes(num,date,res){
 }
 
 function sendsms(num,number,res){
- const config = new SMSMessageConfig({
-    clientId: process.env.clientId,
-    clientSecret: process.env.clientSecret
-});
-const message = new SMSMessage(config);
+  /*let phone="+233"+num;
+  console.log(phone);
   message.sendOne({
         From: "CashCow",
-        To: "+233547789165",
-		//To:"+233"+num,
-        Content: "Your wallet confirmation number is "+number,
+        //To: "+233547789165",
+		To:phone,
+        Content: "Your CashCow Club wallet confirmation number is "+number,
     }).then(responseJSON => {
-        console.log(responseJSON);
-    }).catch((err) =>{
-		console.log(err);
+        /*if(responseJSON){
+		   res.send(JSON.stringify({status:"OK",num:number}));
+		}*/
+		//console.log(responseJSON);
+    /*}).catch((err) =>{
+		res.send(JSON.stringify({status:"nOK"}));
+	});*/
+	
+	res.send(JSON.stringify({status:"OK",num:number}));
+}
+
+function sendnotify(socket,num){
+   MongoClient.connect(url,opt,(err,db)=>{
+    let dbase=db.db("cashcow_db");
+    dbase.collection("notification").findOne({num:num},(err,result)=>{
+	   db.close();
+       socket.emit("notification",JSON.stringify({text:result["text"],status:result["status"]}));
 	});
+   });
 }
 
 
@@ -421,5 +614,7 @@ module.exports={
 	withdrawlim:withdrawlim,
 	checkptimes:checkptimes,
 	checkwtimes:checkwtimes,
-	sendsms:sendsms
+	sendsms:sendsms,
+	notifyseen:notifyseen,
+	sendnotify:sendnotify
 }

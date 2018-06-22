@@ -13,7 +13,6 @@ function exit(e){
   navigator.app.exitApp();
 }
 
-
 document.getElementById("fyp").addEventListener("click",showfyp);
 document.getElementById("buttonup").addEventListener("click",showsignup);
 document.getElementById("buttonsignin").addEventListener("click",showsignin);
@@ -25,7 +24,7 @@ function makein(){ //signin
   if($.trim($("#walletin").val())==""||$.trim($("#passin").val())==""){
     preventform("Either of the input fields is empty");
   }else if(document.getElementById("walletin").value.length!=10){
-    preventform("Please enter a valid wallet number");
+    preventform("Please enter a valid mobile money number");
   }
   else if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
     preventform("Your offline. Please get connected to internet before proceeding.");
@@ -37,13 +36,17 @@ function makein(){ //signin
     data:$(".signin").serialize(),
     success:function(res){
       let m=$.parseJSON(res);
-      //////SpinnerDialog.hide();
+      //Spinnerdialog.hide();
       if(m.status=="OK"){
         startdash($("#walletin").val());
       }else{
         preventform("Account with the provided credentials is not found");
       }
-    }
+    },
+    error: ()=> {
+      //Spinnerdialog.hide();
+      preventform("An unexpected error occurred. Try again.");
+   } 
   });
  }
 }
@@ -63,17 +66,21 @@ function submitsignup(){ //signup form check if exist
       if(m.status!="OK"){
         inserttodb($("#walletup").val());
       }else{
-        //////SpinnerDialog.hide();
-        preventform("An account with this wallet number already exists");
+        //Spinnerdialog.hide();
+        preventform("An account with this mobile money number already exists");
       }
-    }
+    },
+    error: ()=> {
+      //Spinnerdialog.hide();
+      preventform("An unexpected error occurred. Try again.");
+   } 
   });
 }
 }
 
 function inserttodb(num){ //sign up backend handle
   if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
-    //////SpinnerDialog.hide();
+    //Spinnerdialog.hide();
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
     postforsms(num,1);
@@ -82,8 +89,8 @@ function inserttodb(num){ //sign up backend handle
 
 function inserttodbplz(){ //insert to db finally
    //SpinnerDialog.show();
-  $.get("http://192.168.0.107:8080/insert").then((res)=>{
-     //////SpinnerDialog.hide();
+  $.get("http://192.168.0.109:8080/insert").then((res)=>{
+     //Spinnerdialog.hide();
     let m=$.parseJSON(res);
     if(m.status=="OK"){
       navigator.notification.alert("Account created!!! You may now sign in using these credentials!!!",()=>{
@@ -93,6 +100,9 @@ function inserttodbplz(){ //insert to db finally
     }else{
       preventform("An error occured. Please try again.");
     }
+  },(err)=>{
+    //Spinnerdialog.hide();
+    preventform("An error occured. Please try again.");
   });
 }
 
@@ -101,15 +111,18 @@ function passnotmatch(){ //validate sign up form
      $.trim($("#passup").val())==''||$.trim($("#conpassup").val())==''){
          preventform("Either of the input fields is empty");
   }else{
-    if(document.getElementById("walletup").value!=document.getElementById("conwalletup").value){
-		    preventform("Mobile wallet numbers didn't match. Try again.");     
+     if(document.getElementById("walletup").value!=document.getElementById("conwalletup").value){
+		    preventform("Mobile money numbers didn't match. Try again.");     
       }else if(document.getElementById("walletup").value.length!=10 || document.getElementById("conwalletup").value.length!=10 ){
-        preventform("Please enter valid wallet numbers in both fields");
+        preventform("Please enter valid mobile money numbers in both fields");
       }else{
       if(document.getElementById("passup").value!="" && document.getElementById("conpassup").value!=""){
-        if(document.getElementById("passup").value!=document.getElementById("conpassup").value){
+        if(document.getElementById("passup").value.length<8){
+           preventform("Password must consists of length 8 or greater");
+        }else if(document.getElementById("passup").value!=document.getElementById("conpassup").value){
           preventform("Passwords didn't match. Try again.");
-       }else{
+       }
+       else{
          submitsignup();
        }
       }
@@ -147,18 +160,21 @@ function fbdatapost(data){ //post data from fb
   }else{
     //SpinnerDialog.show();
   $.ajax({
-    url:"http://192.168.0.107:8080/fb_in",
+    url:"http://192.168.0.109:8080/fb_in",
     type:'POST',
     data:data,
     success:function(res){
       let m=$.parseJSON(res);
-      //////SpinnerDialog.hide();
+      //Spinnerdialog.hide();
       if(m.status=="OK"){ //already exists
         startdash(m.num);
       }else{ //not existed
         showfyp(0);
       }
-    }
+    },
+    error: ()=> {
+      preventform("An unexpected error occurred. Try again.");
+   } 
   });
 }
 }
@@ -172,20 +188,21 @@ function preventform(a){ //show alert msg
 function showfyp(b){ //fyp dialog box
   let c;
   if(b!=0){
-    c="Enter your account wallet number";
+    c="Enter your account mobile money number";
   }else{
-    c="We require to verify your wallet number before proceeding. So, Please enter it below.";
+    c="We require your mobile money number before proceeding. So, Please enter it below.";
   }
-  window.plugins.numberDialog.promptClear(c, callback," ",["OK","Cancel"]);
+  //window.plugins.numberDialog.promptClear(c, callback," ",["OK","Cancel"]);
+  navigator.notification.prompt(c,callback,"",["OK","Cancel"]);
   function callback(r){
     if(r.buttonIndex==1){
       if(r.input1.length!=10 || isNaN(r.input1)){
         if(b==0){
-          navigator.notification.alert("Please enter a valid wallet number",()=>{
+          navigator.notification.alert("Please enter a valid mobile money number",()=>{
              showfyp(0,c);
           },"",["OK"]);
         }else{
-          preventform("Please enter a valid wallet number");
+          preventform("Please enter a valid mobile money number");
         }
       }else{
         checkifwallet(r.input1,b);
@@ -202,39 +219,47 @@ function checkifwallet(a,b){ //check if wallet already exists
   if(b!=0){
      //SpinnerDialog.show();
     $.ajax({
-      url:"http://192.168.0.107:8080/checkall",
+      url:"http://192.168.0.109:8080/checkall",
       type:"POST",
       data:a,
       success:(res)=>{
-       //////SpinnerDialog.hide();
+       //Spinnerdialog.hide();
        let m=$.parseJSON(res);
+       alert(m);
        if(m.status=="OK"){
          postforsms(a,b);
        }
        if(m.status=="fb"){
-         preventform("This wallet number seems to be the one with facebook account credentials. Please try signing in with facebook.");
+         preventform("This mobile money number seems to be the one with facebook account credentials. Please try signing in with facebook.");
        }
        if(m.status=="nOK"){
-         preventform("No account found with the entered wallet number");
+         preventform("No account found with the entered mobile money number");
        }
-      }
+      },
+      error: ()=> {
+        //Spinnerdialog.hide();
+        preventform("An unexpected error occurred. Try again.");
+     } 
     })
   }else{
-    alert("a");
     //SpinnerDialog.show();
   $.ajax({
-    url:"http://192.168.0.107:8080/checkwallet",
+    url:"http://192.168.0.109:8080/checkwallet",
     type:'POST',
     data:a,
     success:(res)=>{
       let m=$.parseJSON(res);
-      //////SpinnerDialog.hide();
+      //Spinnerdialog.hide();
       if(m.status!="OK"){
          postforsms(a,0);
       }else{
-        preventform("An account with this wallet number already exists");
+        preventform("An account with this mobile money number already exists");
       }
-    }
+    },
+    error: ()=> {
+      //Spinnerdialog.hide();
+      preventform("An unexpected error occurred. Try again.");
+   } 
   });
   }
 }
@@ -242,22 +267,26 @@ function checkifwallet(a,b){ //check if wallet already exists
 
 function postforsms(a,n){ //post for sending smd
   if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
-    //////SpinnerDialog.hide();
+    //Spinnerdialog.hide();
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
   $.ajax({
-    url:"http://192.168.0.107:8080/verifynum",
+    url:"http://192.168.0.109:8080/verifynum",
     type:'POST',
     data:a,
     success:function(res){
-      //////SpinnerDialog.hide();
+      //Spinnerdialog.hide();
       let m=$.parseJSON(res);
       if(m.status=="OK"){
          help(a,m,n);
       }else{
         preventform("An error occurred. Please try again.");
       }
-    }
+    },
+    error: ()=> {
+      //Spinnerdialog.hide();
+      preventform("An unexpected error occurred. Try again.");
+   } 
   });
 }
 }
@@ -266,12 +295,15 @@ function datastore(num){  //store signup of fb data to db
   if(navigator.connection.type==Connection.UNKNOWN||navigator.connection.type==Connection.NONE){
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
-  $.get("http://192.168.0.107:8080/storenow").then((res)=>{
+  $.get("http://192.168.0.109:8080/storenow").then((res)=>{
    if(res=="\"OK\""){
       startdash(num);
     }else{
       preventform("An error occurred. Please try again.");
     }
+  },(err)=>{
+    //Spinnerdialog.hide();
+    preventform("An error occured. Please try again.");
   });
 }
 }
@@ -295,17 +327,21 @@ function passrecover(data){
   }else{
     //SpinnerDialog.show();
   $.ajax({
-    url:"http://192.168.0.107:8080/updatepass",
+    url:"http://192.168.0.109:8080/updatepass",
     type:"POST",
     data:data,
     success:(res)=>{
-      //////SpinnerDialog.hide();
+      //Spinnerdialog.hide();
       if(res=="\"OK\""){
        preventform("Password updated. You may now log in using new password");
       }else{
         preventform("An error occurred. Please try again later");
       }
-    }
+    },
+    error: ()=> {
+      //Spinnerdialog.hide();
+      preventform("An unexpected error occurred. Try again.");
+   } 
   });
 }
 }
@@ -315,11 +351,12 @@ function datastored() { //new data stored
     preventform("Your offline. Please get connected to internet before proceeding.");
   }else{
     //SpinnerDialog.show();
-  $.get("http://192.168.0.107:8080/verified").then((result)=>{
+  $.get("http://192.168.0.109:8080/verified").then((result)=>{
    if(result=="\"OK\""){
-    //////SpinnerDialog.hide();
+    //Spinnerdialog.hide();
     inserttodbplz();
    }else{
+     //Spinnerdialog.hide();
      preventform("An error occurred. Please try again later.");
    }  
   });
@@ -327,7 +364,7 @@ function datastored() { //new data stored
 }
 
 function help(a,m,n){
-  navigator.notification.prompt("Enter the code sent to your wallet device", checkit, " ", ["Done","Cancel"]);
+ navigator.notification.prompt("Enter the code sent to your mobile money device", checkit, " ", ["Done","Cancel"]);
   //window.plugins.numberDialog.promptClear("Enter the code sent to your wallet device", checkit, " ", ["Done","Cancel"]);
         function checkit(r){
           if(r.buttonIndex==1){

@@ -17,7 +17,7 @@ module.exports.controller=function(app,io) {
    });
    
    app.post('/signup_form',(req,res)=>{
-     data=req.body;
+	 data=req.body;
 	 delete data["conwalletup"];
      delete data["conpassup"];
 	 db.checkdata(data,res,2);
@@ -61,7 +61,7 @@ module.exports.controller=function(app,io) {
    });
    
    app.post('/verifynum',(req,res)=>{
-	  let number=Math.floor((Math.random()*100000)+10000);
+	  let number=Math.floor(Math.random() * 100000) + 10000;
 	  console.log(number);
 	  num=Object.keys(req.body)[0].replace(/[\[\]']/g,"");
 	  //console.log(num);

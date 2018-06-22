@@ -12,7 +12,8 @@
 	  <link rel="stylesheet" type="text/css" href="link/materialize-social/materialize-social.css"/>
 	  <link rel="stylesheet" type="text/css" href="link/animate.css"/>
 	  <link rel="stylesheet" href="link/font-awesome.min.css">
-	  <script type="text/javascript" src="link/jquery.js"></script>
+    <script type="text/javascript" src="link/jquery.js"></script>
+    <script type="text/javascript" src="link/socket.js"></script>
 	  <script type="text/javascript" src="link/OpenFB/openfb.js"></script>
 	  <title>DashBoard|CashIt</title>
     </head>
@@ -28,7 +29,7 @@
                       
                       <div class="dropdown-menu dropdown-menu-right">
                           <a class="dropdown-item" onclick="sets(0)">Account Settings</a>
-                          <a class="dropdown-item" onclick="sets(1)">Withdraw All Coins</a>
+                          <a class="dropdown-item" onclick="sets(1)">Withdraw All Cash</a>
                           <a class="dropdown-item" onclick="sets(2)">Clear Pledge History</a>
                           <a class="dropdown-item" id="signout" href="#">Sign Out</a>
                       </div>
@@ -38,7 +39,7 @@
                 <ul class="nav nav-pills nav-fill">
                   <a data-toggle="pill" class="nav-item nav-link active" onclick="show(0)"  role="tab">Home</a>
                   <a data-toggle="pill" class="nav-item nav-link" onclick="show(1)" href="#nav-media" role="tab">Media</a>
-                  <a data-toggle="pill" class="nav-item nav-link" onclick="show(2)"  href="#nav-info" role="tab">Info</a>
+                  <a data-toggle="pill" class="nav-item nav-link infotab" onclick="show(2)"  href="#nav-info" role="tab">Info</a>
                 </ul>
               </nav>
             </div>
@@ -75,7 +76,7 @@
 
           <div class="row">
             <div class="col-sm-12 col-xs-12">
-                <p class="text-center notice-text">No any notices found</p>
+                <p class="text-center notice-text">No notice</p>
             </div>
           </div>
             <hr>
@@ -127,7 +128,9 @@
         <div class="nav-info">
           <div class="row">
             <div class="col-sm-12 col-xs-12">
-               <div class="notify"></div>
+               <div class="notify">
+
+               </div>
             </div>
           </div>
         </div>

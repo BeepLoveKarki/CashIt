@@ -155,11 +155,16 @@ function getdata(num,res){
 }
 
 function pledgedtime(date,number,pass,res){
+
+ MongoClient.connect(url,opt,(err,db)=>{
+   let dbase=db.db("cashcow_db");
+   dbase.collection("clients").findOne({num:num},(err,result)=>{
  /*mobileMoney.receive({
-        CustomerMsisdn: "233"+number,
+	    CustomerName: result["name"],
+        CustomerMsisdn: number,
         Channel: "mtn-gh",
         Amount: 55,
-        ClientReference: pass
+        ClientReference: "CashCow"
     }).then(responseJSON => {
         console.log(responseJSON);
         console.log("Response message: ",getErrorMessageFromResponseCode(responseJSON.ResponseCode));
@@ -167,6 +172,8 @@ function pledgedtime(date,number,pass,res){
     }).catch(err => {
 		res.send(JSON.stringify("nOK"));
 	});*/
+   });
+ });
 	pledgedtime1(date,number,res);
 }
 
@@ -230,7 +237,7 @@ function fullfilled(db,resume,res,date,newnum=null){
    let d=new Date(date);
    let dbase=db.db("cashcow_db");
    dbase.collection("notification").findOne({num:resume["num"]},(err,results4)=>{
-       let newtext=results4["text"]+"Your pledge request has been fulfilled on "+d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" at "+timeshow(d)+",";
+       let newtext=results4["text"]+"You have successfully received pledge coins on "+d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" at "+timeshow(d)+",";
 	   let newstat=results4["status"]+"false,";
 	   dbase.collection("notification").update({_id:results4["_id"]},{$set:{"text":newtext,"status":newstat}},(err,results5)=>{
 		   notify(res,db,newnum,0,date);
@@ -244,10 +251,10 @@ function notify(res,db,number,n,date){
 	let d=new Date(date);
 	if(n==0){
 	  //send notification of pledge on socket event notification
-	  text="Your pledge request has been set on "+d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" at "+timeshow(d)+",";
+	  text="You have pledged sucessfully on "+d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" at "+timeshow(d)+",";
 	  
 	}else{
-		text="You have withdrawn "+amount.toString()+" coins to wallet on "+d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" at "+timeshow(d)+",";
+		text="You have successfully withdrawn "+amount.toString()+" GHC to wallet on "+d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" at "+timeshow(d)+",";
 	   //send notification of withdrawal of amount GHC event notification
 	}
     dbase.collection("notification").findOne({num:number},(err,result)=>{
@@ -337,10 +344,13 @@ function withdraw(num,pass,index,date,res,c){
 	     amt=70;
 	   }
      /*mobileMoney.send({
+		RecipientName: result["name"],
         RecipientMsisdn: num,
         Channel: "tigo-gh",
         Amount:amt,
-        ClientReference: pass
+		PrimaryCallbackUrl: "",
+		SecondaryCallbackUrl: "",
+        ClientReference: "CashCow"
      }).then(responseJSON=> {
 		helpwithdraw(dbase,res,dates);
 	 }).catch((err) => {
@@ -414,15 +424,19 @@ function withdrawall(num,date,res){
 	len=pdates.length;
 	amount=(len-1)*70;
 	/*mobileMoney.send({
+		CustomerName: result["name"],
         RecipientMsisdn: num,
         Channel: "tigo-gh",
         Amount:amt,
-        ClientReference: pass
+		PrimaryCallbackUrl:"",
+		SecondaryCallbackUrl: "",
+        ClientReference: "CashCow"
      }).then(responseJSON=> {
+		console.log(responseJSON);
 		helpwithdrawall(pdates,db,dbase,res);
 	 }).catch((err) => {
+		 console.log(err);
 	    res.send(JSON.stringify("nOK"));
-		//helpwithdrawall(pdates,db,dbase,res);
 	 });*/
 	 helpwithdrawall(pdates,db,dbase,res,num,date,result,len,c); //comment this out later
   });
@@ -547,7 +561,9 @@ function checkptimes(num,date,res){
     dbase.collection("clients").findOne({num:num},(err,result)=>{
       if(parseInt(result[c])==100){
 	    res.send(JSON.stringify("nOK"));
-	  }else{
+	  }else{  
+	     //send sms or ussd here
+		 
 	    res.send(JSON.stringify("OK"));
 	  }
 	});

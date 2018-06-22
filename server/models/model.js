@@ -1,6 +1,8 @@
 let amount,pnum='';
 let MongoClient=require('mongodb').MongoClient;
 let bcrypt=require('bcryptjs');
+let LocalStorage = require('node-localstorage').LocalStorage,
+localStorage = new LocalStorage('./scratch');
 let url="mongodb://127.0.0.1:27017/";
 let opt={ useNewUrlParser: true };
 const { SMSMessage, SMSMessageConfig } = require("hubtel-mx");
@@ -176,20 +178,20 @@ function pledgedtime1(date,number,res){
    let dbase=db.db("cashcow_db");
    dbase.collection("clients").findOne({num:number},(err,result)=>{
 		let newval=parseInt(result[e])+1;
-		/*let newcount=parseInt(result["owncount"])+1;
-		if(pnum!=number){*/
+		let newcount=parseInt(result["owncount"])+1;
+		if(localStorage.getItem("pnum")==undefined||localStorage.getItem("pnum")!=number){
 		  sets={[e]:newval,"pledge":true};
-		/*}else{
+		}else{
 		  sets={[e]:newval,"pledge":true,"owncount":newcount};
-		}*/
-		//pnum=number;
+		}
+		localStorage.setItem("pnum",number);
 	    dbase.collection("clients").findOneAndUpdate({_id:result["_id"]},{$set:sets},(err,results)=>{
 		  if(results){
 				dbase.collection("clients").updateMany({"pledge":true},{$inc:{"count":1}},(err,results1)=>{
 				   if(results1.result.nModified!=0){
-					 /*dbase.collection("clients").findOne({"count":4},(err,results2)=>{
+					 dbase.collection("clients").findOne({"count":4},(err,results2)=>{
 					   if(results2!=undefined){
-						let data=results2["pledgedate"]+d.toLocaleString()+",";*/
+						let data=results2["pledgedate"]+d.toLocaleString()+",";
 						pledgeit(db,results2,data,res,date,number);
 					  }else{
 					    notify(res,db,number,0,date);
@@ -210,13 +212,13 @@ function pledgeit(db,results2,data,res,date,number){
         let dbase=db.db("cashcow_db");
          dbase.collection("clients").findOne({_id:results2["_id"]},(err,resit)=>{
 		   let incs,sets;
-		   //if(parseInt(resit["owncount"])==1){
+		   if(parseInt(resit["owncount"])==1){
 		     incs={"coins":70};
 		     sets={"pledgedate":data,"count":0,"pledge":false};
-		   /*}else{
+		   }else{
 		     incs={"coins":70,"count":-1,"owncount":-1};
 		     sets={"pledgedate":data};
-		   }*/
+		   }
            dbase.collection("clients").update({_id:results2["_id"]},{$set:sets,$inc:incs},(err,results3)=>{
 			  fullfilled(db,results2,res,date,number);  //only for notification
 		   });
